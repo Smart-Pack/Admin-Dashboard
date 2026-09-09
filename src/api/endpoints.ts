@@ -8,4 +8,9 @@ export const AUTH = {
   LOGOUT: 'v1/users/auth/logout/',
   REFRESH: 'v1/users/auth/refresh/',
   VERIFY: 'v1/users/auth/verify/',
-}
+} as const
+
+export const TWO_FACTOR = {
+  REQUEST: 'v1/users/2fa/',
+  VERIFY: 'v1/users/2fa/verify/',
+} as const

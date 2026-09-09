@@ -4,11 +4,13 @@
  */
 
 import * as auth from './auth'
+import * as twoFactor from './twoFactor'
 
 const api = {
   auth,
+  twoFactor,
 }
 
-export { auth }
+export { auth, twoFactor }
 
 export default api
