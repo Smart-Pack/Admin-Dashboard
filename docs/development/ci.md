@@ -54,3 +54,24 @@ Merge into testing/main
 
 CI provides an automated quality gate while code review remains responsible for reviewing the implementation and overall design.
 
+## Git Hooks
+
+The project uses Husky to automate local quality checks before changes are committed or pushed.
+
+### Pre-commit
+
+The pre-commit hook runs:
+
+- Code formatting checks.
+- Linting checks.
+- Type checking.
+
+### Pre-push
+
+The pre-push hook runs:
+
+- Unit tests.
+- Production build verification.
+
+These hooks provide an early quality gate locally before changes are committed or pushed to the remote repository. GitHub Actions provides the corresponding CI quality gate for pull requests.
+
