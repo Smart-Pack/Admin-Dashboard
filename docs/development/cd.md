@@ -41,6 +41,11 @@ The frontend uses `vercel.json` to define the Vite build and deployment configur
 
 The project uses pnpm as its package manager, with the lockfile enforced during deployment.
 
+## Vercel Ignore Build Script
+
+The project uses a Vercel ignore-build script to control which Git branches trigger deployments. Production deployments always proceed, while Preview deployments are limited to the `testing` branch. Builds for other Preview branches are skipped.
+
+
 ## Release
 
 Production deployments are associated with the project's release and versioning process. Stable production states are tagged using semantic versioning.
