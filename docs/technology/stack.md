@@ -36,6 +36,7 @@ This document describes the technologies and tools used to develop and operate t
 | pre-commit                      | Automated Git hooks for local quality checks |
 | Git                             | Version control                              |
 | GitHub                          | Repository and collaboration                 |
+| Husky | Git hooks for automated pre-commit and pre-push quality checks |
 
 ## Development Environment
 

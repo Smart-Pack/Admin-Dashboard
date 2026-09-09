@@ -13,7 +13,12 @@
     "lint": "run-s \"lint:*\"",
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",
-    "format": "prettier --write --experimental-cli src/"
+    "lint:oxlint:check": "oxlint .",
+    "lint:eslint:check": "eslint . --cache",
+    "lint:check": "run-s lint:oxlint:check lint:eslint:check",
+    "format": "prettier --write --experimental-cli src/",
+    "format:check": "prettier --check src/",
+    "prepare": "husky"
   },
   "dependencies": {
     "pinia": "^4.0.2",
@@ -33,6 +38,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-oxlint": "~1.73.0",
     "eslint-plugin-vue": "~10.9.2",
+    "husky": "^9.1.7",
     "jiti": "^2.7.0",
     "jsdom": "^29.1.1",
     "npm-run-all2": "^9.0.2",
