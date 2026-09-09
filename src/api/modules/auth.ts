@@ -29,6 +29,15 @@ export const login = (data: LoginRequest) => {
 }
 
 /**
+ * Logs out the current user by clearing the authentication cookies.
+ *
+ * @returns Axios response from the logout endpoint.
+ */
+export const logout = () => {
+  return apiClient.post(AUTH.LOGOUT)
+}
+
+/**
  * Refreshes the authentication tokens using the refresh token
  * stored in the authentication cookie.
  *

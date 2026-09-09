@@ -2,7 +2,7 @@ import type { AxiosInstance } from 'axios'
 import { describe, expect, it, vi } from 'vitest'
 import apiClient from '@/api/client'
 import { AUTH } from '@/api/endpoints'
-import { login, refresh, verify } from '@/api/modules/auth'
+import { login, logout, refresh, verify } from '@/api/modules/auth'
 
 vi.mock('@/api/client', () => ({
   default: {
@@ -36,6 +36,22 @@ describe('auth API', () => {
     const result = await login(credentials)
 
     expect(apiClient.post).toHaveBeenCalledWith(AUTH.LOGIN, credentials)
+
+    expect(result.data).toEqual(response.data)
+  })
+  /**
+   * Verifies that logout sends the request to the logout endpoint.
+   */
+  it('logs out the current user', async () => {
+    const response = {
+      data: {},
+    }
+
+    vi.mocked(apiClient.post).mockResolvedValue(response)
+
+    const result = await logout()
+
+    expect(apiClient.post).toHaveBeenCalledWith(AUTH.LOGOUT)
 
     expect(result.data).toEqual(response.data)
   })
