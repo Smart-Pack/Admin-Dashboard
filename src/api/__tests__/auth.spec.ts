@@ -2,7 +2,7 @@ import type { AxiosInstance } from 'axios'
 import { describe, expect, it, vi } from 'vitest'
 import apiClient from '@/api/client'
 import { AUTH } from '@/api/endpoints'
-import { login } from '@/api/modules/auth'
+import { login, verify } from '@/api/modules/auth'
 
 vi.mock('@/api/client', () => ({
   default: {
@@ -37,6 +37,22 @@ describe('auth API', () => {
 
     expect(apiClient.post).toHaveBeenCalledWith(AUTH.LOGIN, credentials)
 
+    expect(result.data).toEqual(response.data)
+  })
+  it('verifies an authentication token', async () => {
+    const response = {
+      data: {},
+    }
+
+    vi.mocked(apiClient.post).mockResolvedValue(response)
+
+    const payload = {
+      token: 'access-token',
+    }
+
+    const result = await verify(payload)
+
+    expect(apiClient.post).toHaveBeenCalledWith(AUTH.VERIFY, payload)
     expect(result.data).toEqual(response.data)
   })
 })

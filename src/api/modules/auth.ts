@@ -11,6 +11,10 @@ export interface LoginResponse {
   refresh: string
 }
 
+export interface VerifyRequest {
+  token: string
+}
+
 /**
  * Authenticates a user with their email and password.
  *
@@ -22,4 +26,14 @@ export interface LoginResponse {
  */
 export const login = (data: LoginRequest) => {
   return apiClient.post<LoginResponse>(AUTH.LOGIN, data)
+}
+
+/**
+ * Verifies the authentication token.
+ *
+ * @param data - Token verification payload.
+ * @returns Axios response from the verification endpoint.
+ */
+export const verify = (data: VerifyRequest) => {
+  return apiClient.post(AUTH.VERIFY, data)
 }
