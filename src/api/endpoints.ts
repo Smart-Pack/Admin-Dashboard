@@ -4,8 +4,8 @@
  * Endpoints for user authentication.
  */
 export const AUTH = {
-  LOGIN: 'v1/auth/jwt/create/',
-  LOGOUT: 'v1/auth/jwt/logout/',
-  REFRESH: 'v1/auth/jwt/refresh/',
-  VERIFY: 'v1/auth/jwt/verify/',
+  LOGIN: 'v1/users/auth/login/',
+  LOGOUT: 'v1/users/auth/logout/',
+  REFRESH: 'v1/users/auth/refresh/',
+  VERIFY: 'v1/users/auth/verify/',
 }

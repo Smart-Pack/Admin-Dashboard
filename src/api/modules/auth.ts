@@ -1,4 +1,5 @@
 import apiClient from '@/api/client'
+import type { ApiDetailResponse } from '@/api/types'
 import { AUTH } from '../endpoints'
 
 export interface LoginRequest {
@@ -9,6 +10,10 @@ export interface LoginRequest {
 export interface LoginResponse {
   access: string
   refresh: string
+}
+
+export interface TwoFactorVerifyRequest {
+  otp: string
 }
 
 export interface VerifyRequest {
@@ -34,7 +39,7 @@ export const login = (data: LoginRequest) => {
  * @returns Axios response from the logout endpoint.
  */
 export const logout = () => {
-  return apiClient.post(AUTH.LOGOUT)
+  return apiClient.post<ApiDetailResponse>(AUTH.LOGOUT)
 }
 
 /**
@@ -54,5 +59,5 @@ export const refresh = () => {
  * @returns Axios response from the verification endpoint.
  */
 export const verify = (data: VerifyRequest) => {
-  return apiClient.post(AUTH.VERIFY, data)
+  return apiClient.post<ApiDetailResponse>(AUTH.VERIFY, data)
 }
