@@ -10,3 +10,7 @@ The API client is located at `src/api/client.ts` and is used as the foundation f
 
 Further documentation will cover authentication, users, request/response handling, and other API services as they are implemented.
 
+## Documentation
+
+* [Authentication API](authentication.md) — provides a high-level overview of authentication and two-factor authentication endpoints and their respective flows.
+
