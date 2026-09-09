@@ -1,0 +1,58 @@
+Based on those dependencies, I’d structure the Admin Dashboard stack like this:
+
+# Technology Stack
+
+This document describes the technologies and tools used to develop and operate the SmartPack Admin Dashboard.
+
+## Frontend
+
+| Technology | Purpose                                    |
+| ---------- | ------------------------------------------ |
+| Vue        | Frontend framework                         |
+| TypeScript | Type-safe programming language             |
+| Vite       | Frontend build tool and development server |
+| Pinia      | State management                           |
+| Vue Router | Client-side routing                        |
+
+## Testing
+
+| Tool           | Purpose                                  |
+| -------------- | ---------------------------------------- |
+| Vitest         | Unit and component testing               |
+| Vue Test Utils | Vue component testing utilities          |
+| jsdom          | Browser environment simulation for tests |
+
+## Code Quality and Development Tools
+
+| Tool                            | Purpose                                      |
+| ------------------------------- | -------------------------------------------- |
+| ESLint                          | Code linting                                 |
+| Prettier                        | Code formatting                              |
+| Oxlint                          | Fast JavaScript and TypeScript linting       |
+| vue-tsc                         | Type checking for Vue and TypeScript         |
+| `@vue/eslint-config-typescript` | ESLint configuration for TypeScript and Vue  |
+| `eslint-plugin-vue`             | ESLint rules for Vue                         |
+| `eslint-config-prettier`        | Prevents ESLint and Prettier rule conflicts  |
+| pre-commit                      | Automated Git hooks for local quality checks |
+| Git                             | Version control                              |
+| GitHub                          | Repository and collaboration                 |
+| Husky | Git hooks for automated pre-commit and pre-push quality checks |
+
+## Development Environment
+
+| Tool    | Purpose                             |
+| ------- | ----------------------------------- |
+| Node.js | JavaScript runtime                  |
+| `pnpm`  | Package and dependency management   |
+| VS Code | Recommended development environment |
+
+## Deployment
+
+| Technology | Purpose                                    |
+| ---------- | ------------------------------------------ |
+| Vercel     | Frontend hosting and continuous deployment |
+
+## Planned Tools
+
+Tools that are planned but not yet implemented should be documented separately or marked clearly as planned.
+
