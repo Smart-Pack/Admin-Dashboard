@@ -2,7 +2,7 @@ import type { AxiosInstance } from 'axios'
 import { describe, expect, it, vi } from 'vitest'
 import apiClient from '@/api/client'
 import { AUTH } from '@/api/endpoints'
-import { login, verify } from '@/api/modules/auth'
+import { login, refresh, verify } from '@/api/modules/auth'
 
 vi.mock('@/api/client', () => ({
   default: {
@@ -38,6 +38,23 @@ describe('auth API', () => {
     expect(apiClient.post).toHaveBeenCalledWith(AUTH.LOGIN, credentials)
 
     expect(result.data).toEqual(response.data)
+  })
+  it('refreshes authentication tokens using the refresh cookie', async () => {
+    const response = {
+      data: {
+        access: 'new-access-token',
+        refresh: 'new-refresh-token',
+      },
+    }
+
+    vi.mocked(apiClient.post).mockResolvedValue(response)
+
+    const result = await refresh()
+
+    expect(apiClient.post).toHaveBeenCalledWith(AUTH.REFRESH)
+
+    expect(result.data.access).toBe('new-access-token')
+    expect(result.data.refresh).toBe('new-refresh-token')
   })
   it('verifies an authentication token', async () => {
     const response = {

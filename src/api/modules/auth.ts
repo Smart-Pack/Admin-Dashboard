@@ -29,6 +29,16 @@ export const login = (data: LoginRequest) => {
 }
 
 /**
+ * Refreshes the authentication tokens using the refresh token
+ * stored in the authentication cookie.
+ *
+ * @returns Axios response containing the new access and refresh tokens.
+ */
+export const refresh = () => {
+  return apiClient.post<LoginResponse>(AUTH.REFRESH)
+}
+
+/**
  * Verifies the authentication token.
  *
  * @param data - Token verification payload.
