@@ -13,4 +13,6 @@ Further documentation will cover authentication, users, request/response handlin
 ## Documentation
 
 * [Authentication API](authentication.md) — provides a high-level overview of authentication and two-factor authentication endpoints and their respective flows.
+* [API Interceptors](interceptors.md) — provides a high-level overview of request and response interception and authentication handling.
+
 
