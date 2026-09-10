@@ -8,6 +8,7 @@ This document describes the technologies and tools used to develop and operate t
 
 | Technology | Purpose                                    |
 | ---------- | ------------------------------------------ |
+| Axios      | HTTP client for API communication          |
 | Vue        | Frontend framework                         |
 | TypeScript | Type-safe programming language             |
 | Vite       | Frontend build tool and development server |
