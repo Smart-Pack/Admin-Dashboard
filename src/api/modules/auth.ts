@@ -12,10 +12,6 @@ export interface LoginResponse {
   refresh: string
 }
 
-export interface TwoFactorVerifyRequest {
-  otp: string
-}
-
 export interface VerifyRequest {
   token: string
 }
@@ -27,37 +23,41 @@ export interface VerifyRequest {
  * authentication cookies.
  *
  * @param data - User login credentials.
- * @returns Axios response containing the access and refresh tokens.
+ * @returns Authentication tokens.
  */
-export const login = (data: LoginRequest) => {
-  return apiClient.post<LoginResponse>(AUTH.LOGIN, data)
+export const login = async (data: LoginRequest) => {
+  const response = await apiClient.post<LoginResponse>(AUTH.LOGIN, data)
+  return response.data
 }
 
 /**
  * Logs out the current user by clearing the authentication cookies.
  *
- * @returns Axios response from the logout endpoint.
+ * @returns Logout confirmation.
  */
-export const logout = () => {
-  return apiClient.post<ApiDetailResponse>(AUTH.LOGOUT)
+export const logout = async () => {
+  const response = await apiClient.post<ApiDetailResponse>(AUTH.LOGOUT)
+  return response.data
 }
 
 /**
  * Refreshes the authentication tokens using the refresh token
  * stored in the authentication cookie.
  *
- * @returns Axios response containing the new access and refresh tokens.
+ * @returns Refreshed authentication tokens.
  */
-export const refresh = () => {
-  return apiClient.post<LoginResponse>(AUTH.REFRESH)
+export const refresh = async () => {
+  const response = await apiClient.post<LoginResponse>(AUTH.REFRESH)
+  return response.data
 }
 
 /**
  * Verifies the authentication token.
  *
  * @param data - Token verification payload.
- * @returns Axios response from the verification endpoint.
+ * @returns Verification confirmation.
  */
-export const verify = (data: VerifyRequest) => {
-  return apiClient.post<ApiDetailResponse>(AUTH.VERIFY, data)
+export const verify = async (data: VerifyRequest) => {
+  const response = await apiClient.post<ApiDetailResponse>(AUTH.VERIFY, data)
+  return response.data
 }

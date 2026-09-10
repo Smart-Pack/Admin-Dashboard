@@ -14,7 +14,7 @@ vi.mock('@/api/client', () => ({
 describe('two-factor API', () => {
   /**
    * Verifies that requesting a two-factor authentication code
-   * sends a request without a payload and returns the API response.
+   * sends a request without a payload and returns the response data.
    */
   it('requests a two-factor authentication code', async () => {
     const response = {
@@ -28,7 +28,7 @@ describe('two-factor API', () => {
     const result = await request()
 
     expect(apiClient.post).toHaveBeenCalledWith(TWO_FACTOR.REQUEST)
-    expect(result.data.detail).toBe('Verification code sent.')
+    expect(result.detail).toBe('Verification code sent.')
   })
 
   /**
@@ -52,7 +52,7 @@ describe('two-factor API', () => {
     const result = await verify(payload)
 
     expect(apiClient.post).toHaveBeenCalledWith(TWO_FACTOR.VERIFY, payload)
-    expect(result.data.access).toBe('access-token')
-    expect(result.data.refresh).toBe('refresh-token')
+    expect(result.access).toBe('access-token')
+    expect(result.refresh).toBe('refresh-token')
   })
 })

@@ -16,7 +16,7 @@ vi.mock('@/api/client', () => ({
 describe('auth API', () => {
   /**
    * Verifies that login sends the correct credentials to the login endpoint
-   * and returns the API response.
+   * and returns the response data.
    */
   it('logs in a user', async () => {
     const response = {
@@ -36,11 +36,12 @@ describe('auth API', () => {
     const result = await login(credentials)
 
     expect(apiClient.post).toHaveBeenCalledWith(AUTH.LOGIN, credentials)
-
-    expect(result.data).toEqual(response.data)
+    expect(result).toEqual(response.data)
   })
+
   /**
-   * Verifies that logout sends the request to the logout endpoint.
+   * Verifies that logout sends the request to the logout endpoint
+   * and returns the response data.
    */
   it('logs out the current user', async () => {
     const response = {
@@ -52,9 +53,13 @@ describe('auth API', () => {
     const result = await logout()
 
     expect(apiClient.post).toHaveBeenCalledWith(AUTH.LOGOUT)
-
-    expect(result.data).toEqual(response.data)
+    expect(result).toEqual(response.data)
   })
+
+  /**
+   * Verifies that refresh sends the request to the refresh endpoint
+   * and returns the refreshed authentication tokens.
+   */
   it('refreshes authentication tokens using the refresh cookie', async () => {
     const response = {
       data: {
@@ -68,10 +73,14 @@ describe('auth API', () => {
     const result = await refresh()
 
     expect(apiClient.post).toHaveBeenCalledWith(AUTH.REFRESH)
-
-    expect(result.data.access).toBe('new-access-token')
-    expect(result.data.refresh).toBe('new-refresh-token')
+    expect(result.access).toBe('new-access-token')
+    expect(result.refresh).toBe('new-refresh-token')
   })
+
+  /**
+   * Verifies that token verification sends the correct payload
+   * and returns the response data.
+   */
   it('verifies an authentication token', async () => {
     const response = {
       data: {},
@@ -86,6 +95,6 @@ describe('auth API', () => {
     const result = await verify(payload)
 
     expect(apiClient.post).toHaveBeenCalledWith(AUTH.VERIFY, payload)
-    expect(result.data).toEqual(response.data)
+    expect(result).toEqual(response.data)
   })
 })

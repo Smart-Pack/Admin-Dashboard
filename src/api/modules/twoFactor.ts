@@ -10,18 +10,20 @@ export interface TwoFactorVerifyRequest {
 /**
  * Requests a two-factor authentication code.
  *
- * @returns Axios response containing a confirmation message.
+ * @returns Confirmation message.
  */
-export const request = () => {
-  return apiClient.post<ApiDetailResponse>(TWO_FACTOR.REQUEST)
+export const request = async () => {
+  const response = await apiClient.post<ApiDetailResponse>(TWO_FACTOR.REQUEST)
+  return response.data
 }
 
 /**
  * Verifies a two-factor authentication code.
  *
  * @param data - One-time password verification payload.
- * @returns Axios response containing the authentication tokens.
+ * @returns Authentication tokens.
  */
-export const verify = (data: TwoFactorVerifyRequest) => {
-  return apiClient.post<LoginResponse>(TWO_FACTOR.VERIFY, data)
+export const verify = async (data: TwoFactorVerifyRequest) => {
+  const response = await apiClient.post<LoginResponse>(TWO_FACTOR.VERIFY, data)
+  return response.data
 }
