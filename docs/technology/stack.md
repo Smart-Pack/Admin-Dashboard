@@ -15,6 +15,7 @@ This document describes the technologies and tools used to develop and operate t
 | Pinia      | State management                           |
 | Tailwind CSS | Utility-first CSS framework |
 | @tailwindcss/vite | Tailwind CSS integration for Vite |
+| SweetAlert2 | — Alert, toast, and confirmation notifications |
 | Vue Router | Client-side routing                        |
 | VeeValidate | — Form validation and field state management |
 | @vee-validate/rules | — Built-in validation rules for VeeValidate |
