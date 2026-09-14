@@ -21,7 +21,7 @@
   --background-image-auth-gradient: linear-gradient(180deg, #4c8a6c 0%, #0b1c14 100%);
   --background-image-auth-gradient-dark: linear-gradient(180deg, #0f172a 0%, #020617 100%);
   --background-image-auth-right: url('/src/assets/img/auth-right-bg.svg');
-  --background-image-auth-right-dark: url('/src/assets/img/auth-right-bg.svg');
+  --background-image-auth-right-dark: url('/src/assets/img/auth-right-bg-purple.svg');
 
   /* Shadows */
   --shadow-card-light: 0 10px 25px -10px rgba(0, 0, 0, 0.25);
