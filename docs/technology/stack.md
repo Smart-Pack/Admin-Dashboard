@@ -13,6 +13,8 @@ This document describes the technologies and tools used to develop and operate t
 | TypeScript | Type-safe programming language             |
 | Vite       | Frontend build tool and development server |
 | Pinia      | State management                           |
+| Tailwind CSS | Utility-first CSS framework |
+| @tailwindcss/vite | Tailwind CSS integration for Vite |
 | Vue Router | Client-side routing                        |
 
 ## Testing
