@@ -3,6 +3,25 @@
 Welcome to the SmartPack Admin Dashboard documentation hub.
 
 ## Components
+### Base Components
+
+Reusable components shared across multiple views are stored in `src/components/Base/`.
+
+#### InputField
+
+`InputField.vue` provides a reusable form input component with support for common field types, including text, password, phone, select, textarea, and file inputs.
+
+The component integrates with the application's centralized form validation system and supports reusable field icons and input actions.
+
+Unit tests are located alongside the component in `src/components/Base/__tests__/`.
+
+### Data
+
+Country data used by the phone and country-related input fields is stored in:
+
+```text
+src/data/countries.ts
+```
 
 ### Icons
 
