@@ -10,4 +10,5 @@ Welcome to the SmartPack Admin Dashboard documentation hub.
 * [API](api/README.md) - documents the API integration, client configuration, authentication, and communication with the SmartPack backend.
 * [Stores](./stores/README.md) — Pinia stores and application state management.
 * [Layouts](./layouts/README.md) — Application layouts and shared page structures.
+* [Helpers](helpers/README.md) — Reusable application utilities and helper functionality.
 
