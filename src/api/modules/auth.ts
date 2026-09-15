@@ -154,7 +154,5 @@ export const resetPassword = async (data: ResetPasswordRequest): Promise<string>
     }
 
     throw e
-
-    throw e
   }
 }

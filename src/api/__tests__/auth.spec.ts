@@ -125,7 +125,7 @@ describe('auth API', () => {
 
     expect(apiClient.post).toHaveBeenCalledWith(AUTH.FORGOT, payload)
     expect(result).toBe(
-      'Password reset link has been sent to your email. Click on the link to reset your password.'
+      'Password reset link has been sent to your email. Click on the link to reset your password.',
     )
   })
 
@@ -213,7 +213,7 @@ describe('auth API', () => {
         uid: 'MQ',
         token: 'reset-token',
         new_password: 'NewPassword123!',
-      })
+      }),
     ).rejects.toBe(error)
 
     expect(error.message).toBe('Request failed with status code 500')
@@ -242,11 +242,11 @@ describe('auth API', () => {
         uid: 'MQ',
         token: '',
         new_password: 'NewPassword123!',
-      })
+      }),
     ).rejects.toBe(error)
 
     expect(error.message).toBe(
-      'Password reset link expired. Initiate the process again to receive a new link in your email'
+      'Password reset link expired. Initiate the process again to receive a new link in your email',
     )
     expect(error.reload).toBe(true)
   })
@@ -273,11 +273,11 @@ describe('auth API', () => {
         uid: '',
         token: 'reset-token',
         new_password: 'NewPassword123!',
-      })
+      }),
     ).rejects.toBe(error)
 
     expect(error.message).toBe(
-      'Password reset link expired. Initiate the process again to receive a new link in your email'
+      'Password reset link expired. Initiate the process again to receive a new link in your email',
     )
     expect(error.reload).toBe(true)
   })
@@ -305,11 +305,11 @@ describe('auth API', () => {
         uid: '',
         token: '',
         new_password: 'NewPassword123!',
-      })
+      }),
     ).rejects.toBe(error)
 
     expect(error.message).toBe(
-      'Password reset link expired. Initiate the process again to receive a new link in your email'
+      'Password reset link expired. Initiate the process again to receive a new link in your email',
     )
     expect(error.reload).toBe(true)
   })
@@ -336,7 +336,7 @@ describe('auth API', () => {
         uid: 'MQ',
         token: 'reset-token',
         new_password: 'weak',
-      })
+      }),
     ).rejects.toBe(error)
 
     expect(error.message).toBe('Password is too short.\nPassword must contain a number.')
@@ -364,7 +364,7 @@ describe('auth API', () => {
         uid: 'MQ',
         token: 'reset-token',
         new_password: 'NewPassword123!',
-      })
+      }),
     ).rejects.toBe(error)
 
     expect(error.message).toBe('Request failed with status code 400')
