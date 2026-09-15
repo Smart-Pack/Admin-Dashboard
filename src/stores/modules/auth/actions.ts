@@ -3,12 +3,14 @@
  * @description Actions for managing authentication state.
  */
 
-import { auth } from '@/api'
+import { auth, twoFactor } from '@/api'
 import { getMe } from '@/api/modules/users'
 import type { AuthState } from './state'
+import { ALLOWED_ACCOUNT_TYPES } from './constants'
 
-interface AuthActions {
+export interface AuthActions {
   clearStore(): void
+  createTwoFaToken(): Promise<void>
   fetchUser(): Promise<void>
   refreshToken(): Promise<void>
 }
@@ -58,5 +60,37 @@ export const actions: AuthActions = {
       this.clearStore()
       throw error
     }
+  },
+
+  /**
+   * Validates the logged-in user's account type and requests a 2FA token.
+   *
+   * @returns {Promise<string>} The 2FA request confirmation message.
+   * @throws {Error} If the user is not authenticated or is not allowed
+   * to access the dashboard.
+   */
+  async createTwoFaToken(this: AuthStoreContext): Promise<void> {
+    const accountType = this.loggedInUser?.account_type
+
+    if (!accountType) {
+      throw new Error('User is not authenticated.')
+    }
+
+    if (!ALLOWED_ACCOUNT_TYPES.includes(accountType)) {
+      const dashboardMap = {
+        internal: 'Admin',
+        customer: 'Customer',
+      }
+
+      const dashboard = dashboardMap[accountType]
+
+      throw new Error(
+        dashboard
+          ? `Your credentials are for accessing the ${dashboard} dashboard. Accessing the Admin dashboard is restricted for your account type.`
+          : 'The provided credentials are not supposed to be used for this dashboard.',
+      )
+    }
+
+    await twoFactor.request()
   },
 }
