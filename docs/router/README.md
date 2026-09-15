@@ -5,4 +5,5 @@ This directory contains the routing configuration and navigation logic for the S
 ## Documentation
 
 * [Router Guard](./guard.md) - covers logic executed during route navigation.
+* [Authentication Pages](auth-pages.md) - Describes the purpose of each authentication page
 
