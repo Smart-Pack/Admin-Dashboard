@@ -4,3 +4,4 @@
  */
 
 export { useAuthStore } from './modules/auth'
+export { useUiStore } from './modules/ui'
