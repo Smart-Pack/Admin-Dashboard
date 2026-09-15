@@ -4,10 +4,12 @@
  */
 
 import { auth } from '@/api'
+import { getMe } from '@/api/modules/users'
 import type { AuthState } from './state'
 
 interface AuthActions {
   clearStore(): void
+  fetchUser(): Promise<void>
   refreshToken(): Promise<void>
 }
 
@@ -22,6 +24,7 @@ export const actions: AuthActions = {
    */
   clearStore(this: AuthStoreContext) {
     this.accessToken = null
+    this.loggedInUser = null
   },
 
   /**
@@ -36,6 +39,21 @@ export const actions: AuthActions = {
       const { access } = await auth.refresh()
 
       this.accessToken = access
+    } catch (error) {
+      this.clearStore()
+      throw error
+    }
+  },
+  /**
+   * Fetches the currently logged-in user's details using the API service.
+   * On success, updates the user data in the store.
+   *
+   * @returns {Promise<void>}
+   */
+  async fetchUser(this: AuthStoreContext) {
+    try {
+      const loggedInUser = await getMe()
+      this.loggedInUser = loggedInUser
     } catch (error) {
       this.clearStore()
       throw error
