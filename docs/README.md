@@ -38,4 +38,6 @@ Reusable SVG icon components are stored in `src/components/Icons/` and can be sh
 * [Layouts](./layouts/README.md) — Application layouts and shared page structures.
 * [Helpers](helpers/README.md) — Reusable application utilities and helper functionality.
 * [Components](components/README.md) - Reusable Vue components are documented in.
+* [Router](router/README.md) - Application routing and navigation logic are documented in.
+
 
