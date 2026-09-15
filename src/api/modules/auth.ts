@@ -16,6 +16,12 @@ export interface LoginResponse {
   refresh: string
 }
 
+export interface ResetPasswordRequest {
+  uid: string
+  token: string
+  new_password: string
+}
+
 export interface VerifyRequest {
   token: string
 }
@@ -96,6 +102,58 @@ export const forgotPassword = async (data: ForgotPasswordRequest): Promise<strin
     } else if (responseData?.email) {
       e.message = responseData.email
     }
+
+    throw e
+  }
+}
+
+/**
+ * Resets the user's password using the token from the reset link.
+ *
+ * @param {ResetPasswordRequest} data - The request payload.
+ * @param {string} data.uid - The user's ID from the reset link.
+ * @param {string} data.token - The token from the reset link.
+ * @param {string} data.new_password - The new password.
+ * @returns {Promise<string>} A promise that resolves with a success message.
+ * @throws {unknown} Throws a decorated error if the token is invalid or expired.
+ */
+export const resetPassword = async (data: ResetPasswordRequest): Promise<string> => {
+  try {
+    await apiClient.post(AUTH.RESET, data)
+    return 'Password Reset successful.'
+  } catch (error: unknown) {
+    const e = error as {
+      response?: {
+        status?: number
+        data?: {
+          token?: string[]
+          uid?: string[]
+          new_password?: string[]
+        }
+      }
+      message: string
+      reload?: boolean
+    }
+
+    if (e.response?.status !== 400) {
+      throw e
+    }
+
+    const data = e.response?.data
+
+    if (!data) {
+      throw e
+    }
+
+    if ('token' in data || 'uid' in data) {
+      e.message =
+        'Password reset link expired. Initiate the process again to receive a new link in your email'
+      e.reload = true
+    } else if ('new_password' in data) {
+      e.message = data.new_password?.join('\n') ?? ''
+    }
+
+    throw e
 
     throw e
   }
