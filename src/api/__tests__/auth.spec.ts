@@ -2,7 +2,7 @@ import type { AxiosInstance } from 'axios'
 import { describe, expect, it, vi } from 'vitest'
 import apiClient from '@/api/client'
 import { AUTH } from '@/api/endpoints'
-import { login, logout, refresh, verify } from '@/api/modules/auth'
+import { forgotPassword, login, logout, refresh, verify } from '@/api/modules/auth'
 
 vi.mock('@/api/client', () => ({
   default: {
@@ -96,5 +96,68 @@ describe('auth API', () => {
 
     expect(apiClient.post).toHaveBeenCalledWith(AUTH.VERIFY, payload)
     expect(result).toEqual(response.data)
+  })
+  /**
+   * Verifies that forgot password sends the user's email
+   * and returns the success message.
+   */
+  it('requests a password reset', async () => {
+    const response = {
+      data: {},
+    }
+
+    vi.mocked(apiClient.post).mockResolvedValue(response)
+
+    const payload = {
+      email: 'user@example.com',
+    }
+
+    const result = await forgotPassword(payload)
+
+    expect(apiClient.post).toHaveBeenCalledWith(AUTH.FORGOT, payload)
+    expect(result).toBe(
+      'Password reset link has been sent to your email. Click on the link to reset your password.',
+    )
+  })
+
+  /**
+   * Verifies that the API detail error is assigned to error.message.
+   */
+  it('handles password reset detail errors', async () => {
+    const error = {
+      response: {
+        data: {
+          detail: 'Unable to process password reset request.',
+        },
+      },
+      message: 'Request failed',
+    }
+
+    vi.mocked(apiClient.post).mockRejectedValue(error)
+
+    await expect(forgotPassword({ email: 'user@example.com' })).rejects.toBe(error)
+
+    expect(error.message).toBe('Unable to process password reset request.')
+  })
+
+  /**
+   * Verifies that the API email error is assigned to error.message
+   * when no detail error is provided.
+   */
+  it('handles password reset email errors', async () => {
+    const error = {
+      response: {
+        data: {
+          email: ['Enter a valid email address.'],
+        },
+      },
+      message: 'Request failed',
+    }
+
+    vi.mocked(apiClient.post).mockRejectedValue(error)
+
+    await expect(forgotPassword({ email: 'invalid@example.com' })).rejects.toBe(error)
+
+    expect(error.message).toEqual(['Enter a valid email address.'])
   })
 })

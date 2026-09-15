@@ -2,6 +2,10 @@ import apiClient from '@/api/client'
 import type { ApiDetailResponse } from '@/api/types'
 import { AUTH } from '../endpoints'
 
+export interface ForgotPasswordRequest {
+  email: string
+}
+
 export interface LoginRequest {
   email: string
   password: string
@@ -60,4 +64,39 @@ export const refresh = async () => {
 export const verify = async (data: VerifyRequest) => {
   const response = await apiClient.post<ApiDetailResponse>(AUTH.VERIFY, data)
   return response.data
+}
+
+/**
+ * Sends a password reset link to the user's email.
+ *
+ * @param data - User email address.
+ * @returns A success message when the request succeeds.
+ * @throws An error containing the API error message when the request fails.
+ */
+export const forgotPassword = async (data: ForgotPasswordRequest): Promise<string> => {
+  try {
+    await apiClient.post(AUTH.FORGOT, data)
+
+    return 'Password reset link has been sent to your email. Click on the link to reset your password.'
+  } catch (error: unknown) {
+    const e = error as {
+      response?: {
+        data?: {
+          detail?: string
+          email?: string
+        }
+      }
+      message: string
+    }
+
+    const responseData = e.response?.data
+
+    if (responseData?.detail) {
+      e.message = responseData.detail
+    } else if (responseData?.email) {
+      e.message = responseData.email
+    }
+
+    throw e
+  }
 }

@@ -4,6 +4,7 @@
  * Endpoints for user authentication.
  */
 export const AUTH = {
+  FORGOT: '/v1/users/reset_password/request/',
   LOGIN: 'v1/users/auth/login/',
   LOGOUT: 'v1/users/auth/logout/',
   REFRESH: 'v1/users/auth/refresh/',
