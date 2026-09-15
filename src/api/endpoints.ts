@@ -16,3 +16,7 @@ export const TWO_FACTOR = {
   REQUEST: 'v1/users/2fa/',
   VERIFY: 'v1/users/2fa/verify/',
 } as const
+
+export const USERS = {
+  ME: 'v1/users/me/',
+} as const

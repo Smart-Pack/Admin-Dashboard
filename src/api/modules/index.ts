@@ -5,12 +5,14 @@
 
 import * as auth from './auth'
 import * as twoFactor from './twoFactor'
+import * as users from './users'
 
 const api = {
   auth,
   twoFactor,
+  users,
 }
 
-export { auth, twoFactor }
+export { auth, twoFactor, users }
 
 export default api
