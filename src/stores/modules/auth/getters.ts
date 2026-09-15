@@ -5,7 +5,7 @@ import type { AuthState } from './state'
  */
 export const getters = {
   /**
-   * Returns the current access token.
+   * Returns whether an access token is currently available.
    */
-  accessToken: (state: AuthState) => state.accessToken,
+  hasAccessToken: (state: AuthState) => Boolean(state.accessToken),
 }
