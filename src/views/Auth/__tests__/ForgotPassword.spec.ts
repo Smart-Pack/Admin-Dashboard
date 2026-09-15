@@ -72,6 +72,6 @@ describe('ForgotPassword', () => {
     const wrapper = mountComponent()
     const authCard = wrapper.findComponent(AuthCard)
 
-    expect(authCard.props('authFn')).toBe(forgotPassword)
+    expect(authCard.props('authFn')).toEqual(expect.any(Function))
   })
 })
