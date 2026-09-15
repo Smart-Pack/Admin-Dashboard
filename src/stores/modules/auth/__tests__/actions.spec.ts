@@ -12,6 +12,7 @@ vi.mock('@/api/modules/users', () => ({
 }))
 vi.mock('@/api', () => ({
   auth: {
+    login: vi.fn<() => Promise<{ access: string; refresh: string }>>(),
     refresh: vi.fn<() => Promise<{ access: string; refresh: string }>>(),
   },
   twoFactor: {
@@ -238,6 +239,65 @@ describe('auth store actions', () => {
       vi.mocked(twoFactor.request).mockRejectedValue(error)
 
       await expect(store.createTwoFaToken()).rejects.toThrow('Failed to request 2FA token')
+    })
+  })
+  describe('logIn', () => {
+    const credentials = {
+      email: 'john@example.com',
+      password: 'password123',
+    }
+
+    it('logs in, stores the access token, fetches the user, and requests 2FA', async () => {
+      vi.mocked(auth.login).mockResolvedValue({
+        access: 'new-access-token',
+        refresh: 'refresh-token',
+      })
+
+      vi.mocked(getMe).mockResolvedValue({
+        id: 1,
+        first_name: 'John',
+        last_name: 'Doe',
+        full_name: 'John Doe',
+        email: 'john@example.com',
+        phone: '+254712345678',
+        profile_pic: null,
+        account_type: 'internal',
+        role: 'staff',
+        date_of_birth: '2000-01-01',
+        gender: 'male',
+        changed_password_after_initial_login: true,
+        created_at: '2026-09-15T12:33:13.497Z',
+        updated_at: '2026-09-15T12:33:13.497Z',
+        two_factor_enabled: true,
+        status: 'active',
+      })
+
+      vi.mocked(twoFactor.request).mockResolvedValue({
+        detail: 'OTP sent successfully.',
+      })
+
+      await store.logIn(credentials)
+
+      expect(auth.login).toHaveBeenCalledExactlyOnceWith(credentials)
+      expect(store.accessToken).toBe('new-access-token')
+      expect(getMe).toHaveBeenCalledExactlyOnceWith()
+      expect(twoFactor.request).toHaveBeenCalledExactlyOnceWith()
+      expect(store.loginBtn).toBe('Log In')
+    })
+
+    it('clears the store and rethrows when login fails', async () => {
+      const error = new Error('Invalid credentials')
+
+      vi.mocked(auth.login).mockRejectedValue(error)
+      store.accessToken = 'existing-access-token'
+
+      await expect(store.logIn(credentials)).rejects.toThrow('Invalid credentials')
+
+      expect(store.accessToken).toBeNull()
+      expect(store.loggedInUser).toBeNull()
+      expect(getMe).not.toHaveBeenCalled()
+      expect(twoFactor.request).not.toHaveBeenCalled()
+      expect(store.loginBtn).toBe('Log In')
     })
   })
 })

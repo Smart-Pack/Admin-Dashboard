@@ -4,6 +4,7 @@
  */
 
 import { auth, twoFactor } from '@/api'
+import type { LoginRequest } from '@/api/modules/auth'
 import { getMe } from '@/api/modules/users'
 import type { AuthState } from './state'
 import { ALLOWED_ACCOUNT_TYPES } from './constants'
@@ -12,6 +13,7 @@ export interface AuthActions {
   clearStore(): void
   createTwoFaToken(): Promise<void>
   fetchUser(): Promise<void>
+  logIn(payload: LoginRequest): Promise<string>
   refreshToken(): Promise<void>
 }
 
@@ -92,5 +94,39 @@ export const actions: AuthActions = {
     }
 
     await twoFactor.request()
+  },
+  /**
+   * Orchestrates the entire login flow.
+   * 1. Calls the API service to log in with credentials.
+   * 2. Stores the access token.
+   * 3. Fetches the logged-in user's profile.
+   * 4. Requests the 2FA token.
+   *
+   * @param {AuthStoreContext} this - The authentication store context.
+   * @param {LoginRequest} payload - The user's login credentials.
+   * @returns {Promise<{ detail: string }>} The 2FA request confirmation.
+   * @throws {Error} Throws an error on failure.
+   */
+  async logIn(this: AuthStoreContext, payload: LoginRequest) {
+    this.loginBtn = 'Logging In...'
+
+    try {
+      const { access } = await auth.login(payload)
+
+      this.accessToken = access
+
+      this.loginBtn = 'Fetching user info...'
+      await this.fetchUser()
+
+      this.loginBtn = 'Sending OTP Token to your email...'
+      await this.createTwoFaToken()
+
+      return 'OTP sent successfully.'
+    } catch (error) {
+      this.clearStore()
+      throw error
+    } finally {
+      this.loginBtn = 'Log In'
+    }
   },
 }
