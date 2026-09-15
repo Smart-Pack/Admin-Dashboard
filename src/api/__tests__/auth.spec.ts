@@ -47,6 +47,30 @@ describe('auth API', () => {
     expect(apiClient.post).toHaveBeenCalledWith(AUTH.LOGIN, credentials)
     expect(result).toEqual(response.data)
   })
+  /**
+   * Verifies that login converts an API detail error into a standard Error
+   * with the detail message.
+   */
+  it('throws the API detail message when login fails', async () => {
+    const error = {
+      response: {
+        data: {
+          detail: 'Invalid email or password.',
+        },
+      },
+    }
+
+    vi.mocked(apiClient.post).mockRejectedValue(error)
+
+    const credentials = {
+      email: 'user@example.com',
+      password: 'password',
+    }
+
+    await expect(login(credentials)).rejects.toThrow('Invalid email or password.')
+
+    expect(apiClient.post).toHaveBeenCalledWith(AUTH.LOGIN, credentials)
+  })
 
   /**
    * Verifies that logout sends the request to the logout endpoint

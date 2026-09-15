@@ -1,5 +1,6 @@
 import apiClient from '@/api/client'
 import type { ApiDetailResponse } from '@/api/types'
+import { getApiErrorDetail } from '@/api/utils'
 import { AUTH } from '../endpoints'
 
 export interface ForgotPasswordRequest {
@@ -36,8 +37,18 @@ export interface VerifyRequest {
  * @returns Authentication tokens.
  */
 export const login = async (data: LoginRequest) => {
-  const response = await apiClient.post<LoginResponse>(AUTH.LOGIN, data)
-  return response.data
+  try {
+    const response = await apiClient.post<LoginResponse>(AUTH.LOGIN, data)
+    return response.data
+  } catch (error: unknown) {
+    const detail = getApiErrorDetail(error)
+
+    if (detail) {
+      throw new Error(detail)
+    }
+
+    throw error
+  }
 }
 
 /**

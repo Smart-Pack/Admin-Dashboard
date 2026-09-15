@@ -1,4 +1,5 @@
 import apiClient from '@/api/client'
+import { getApiErrorDetail } from '@/api/utils'
 import type { ApiDetailResponse } from '@/api/types'
 import { TWO_FACTOR } from '../endpoints'
 import type { LoginResponse } from './auth'
@@ -13,8 +14,18 @@ export interface TwoFactorVerifyRequest {
  * @returns Confirmation message.
  */
 export const request = async () => {
-  const response = await apiClient.post<ApiDetailResponse>(TWO_FACTOR.REQUEST)
-  return response.data
+  try {
+    const response = await apiClient.post<ApiDetailResponse>(TWO_FACTOR.REQUEST)
+    return response.data
+  } catch (error: unknown) {
+    const detail = getApiErrorDetail(error)
+
+    if (detail) {
+      throw new Error(detail)
+    }
+
+    throw error
+  }
 }
 
 /**
