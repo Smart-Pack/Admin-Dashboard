@@ -13,3 +13,8 @@ Allows users to set a new password using the password reset link received by ema
 ## Login
 
 Allows users to authenticate using their email address and password. After successful authentication, the user's account information is retrieved and their account type is validated. An OTP is then sent to the user's email, and the user is redirected to the Two-Factor Authentication page to complete verification. If authentication fails, the appropriate error message is displayed.
+
+## Two-Factor Authentication
+
+Allows users to verify their identity using the OTP sent to their email address after successful login. The user enters the six-digit OTP, which is validated before access to the application is granted. Users can also request a new OTP, subject to the resend cooldown period. If verification fails, the appropriate error message is displayed.
+

@@ -26,6 +26,13 @@ const routes: RouteRecordRaw[] = [
         name: 'login',
         component: () => import('@/views/Auth/Login.vue'),
       },
+      // 2FA page
+      {
+        path: '2FA',
+        name: '2fa',
+        component: () => import('@/views/Auth/TwoFactor.vue'),
+        meta: { title: '2FA' },
+      },
       // Forgot password page
       {
         path: 'forgot-password',
