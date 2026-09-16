@@ -5,6 +5,7 @@
 
 import { auth, twoFactor } from '@/api'
 import type { LoginRequest } from '@/api/modules/auth'
+import type { TwoFactorVerifyRequest } from '@/api/modules/twoFactor'
 import { getMe } from '@/api/modules/users'
 import type { AuthState } from './state'
 import { ALLOWED_ACCOUNT_TYPES } from './constants'
@@ -15,6 +16,7 @@ export interface AuthActions {
   fetchUser(): Promise<void>
   logIn(payload: LoginRequest): Promise<string>
   refreshToken(): Promise<void>
+  verifyTwoFaToken(payload: TwoFactorVerifyRequest): Promise<void>
 }
 
 type AuthStoreContext = AuthState & AuthActions
@@ -128,5 +130,16 @@ export const actions: AuthActions = {
     } finally {
       this.loginBtn = 'Log In'
     }
+  },
+  /**
+   * Verifies the 2FA token using the API service.
+   * On success, updates the access token.
+   *
+   * @param payload - The 2FA token payload.
+   * @returns A promise that resolves when verification is complete.
+   */
+  async verifyTwoFaToken(this: AuthStoreContext, payload: TwoFactorVerifyRequest): Promise<void> {
+    const { access } = await twoFactor.verify(payload)
+    this.accessToken = access
   },
 }

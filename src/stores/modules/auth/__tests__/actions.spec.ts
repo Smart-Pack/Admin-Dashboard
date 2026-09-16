@@ -17,6 +17,7 @@ vi.mock('@/api', () => ({
   },
   twoFactor: {
     request: vi.fn<() => Promise<{ detail: string }>>(),
+    verify: vi.fn<() => Promise<{ access: string }>>(),
   },
 }))
 
@@ -298,6 +299,23 @@ describe('auth store actions', () => {
       expect(getMe).not.toHaveBeenCalled()
       expect(twoFactor.request).not.toHaveBeenCalled()
       expect(store.loginBtn).toBe('Log In')
+    })
+  })
+  describe('verifyTwoFaToken', () => {
+    it('verifies the 2FA token and updates the access token', async () => {
+      const payload = {
+        otp: '123456',
+      }
+
+      vi.mocked(twoFactor.verify).mockResolvedValue({
+        access: 'new-access-token',
+        refresh: 'new-refresh-token',
+      })
+
+      await store.verifyTwoFaToken(payload)
+
+      expect(twoFactor.verify).toHaveBeenCalledWith(payload)
+      expect(store.accessToken).toBe('new-access-token')
     })
   })
 })

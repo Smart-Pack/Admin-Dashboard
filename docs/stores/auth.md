@@ -13,6 +13,7 @@ The authentication store is responsible for:
 - Maintaining the current access token.
 - Maintaining the currently logged-in user's information.
 - Orchestrating the login flow.
+- Orchestrating the two-factor authentication (OTP) verification flow.
 - Clearing authentication state when the user logs out or authentication fails.
 - Refreshing the access token when required.
 - Providing authentication state to components and other application modules.
