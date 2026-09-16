@@ -5,7 +5,16 @@ import type { AuthState } from './state'
  */
 export const getters = {
   /**
-   * Returns the current access token.
+   * Returns whether an access token is currently available.
    */
-  accessToken: (state: AuthState) => state.accessToken,
+  hasAccessToken: (state: AuthState) => Boolean(state.accessToken),
+  /**
+   * Indicates whether the user has completed OTP verification.
+   */
+  hasVerifiedOtp: (state: AuthState): boolean => Boolean(state.loggedInUser?.two_factor_enabled),
+  /**
+   * Indicates whether the user has changed their password after the initial login.
+   */
+  hasChangedPassword: (state: AuthState): boolean =>
+    Boolean(state.loggedInUser?.changed_password_after_initial_login),
 }

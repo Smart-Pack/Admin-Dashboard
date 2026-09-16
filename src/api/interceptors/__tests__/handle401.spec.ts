@@ -2,9 +2,16 @@ import type { AxiosError, AxiosResponse } from 'axios'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AUTH, TWO_FACTOR } from '@/api/endpoints'
+import router from '@/router'
 
 import { handle401 } from '../handle401'
 import { retryRequest } from '../retryRequest'
+
+vi.mock('@/router', () => ({
+  default: {
+    replace: vi.fn<() => Promise<unknown>>(),
+  },
+}))
 
 vi.mock('../retryRequest', () => ({
   retryRequest: vi.fn<(error: AxiosError) => Promise<unknown>>(),
@@ -34,11 +41,14 @@ describe('handle401', () => {
     expect(retryRequest).not.toHaveBeenCalled()
   })
 
-  it('rejects a 401 response from the refresh endpoint', async () => {
+  it('redirects to login and rejects with a session expired error for the refresh endpoint', async () => {
     const error = createError(AUTH.REFRESH)
 
-    await expect(handle401(error)).rejects.toBe(error)
+    await expect(handle401(error)).rejects.toThrow('Session expired. Please log in again.')
 
+    expect(router.replace).toHaveBeenCalledExactlyOnceWith({
+      name: 'login',
+    })
     expect(retryRequest).not.toHaveBeenCalled()
   })
 
@@ -50,20 +60,44 @@ describe('handle401', () => {
     expect(retryRequest).not.toHaveBeenCalled()
   })
 
-  it('rejects a 401 response from the two-factor request endpoint', async () => {
+  it('delegates a 401 response from the two-factor request endpoint to retryRequest', async () => {
     const error = createError(TWO_FACTOR.REQUEST)
+    const retryResponse = {
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {},
+      data: {
+        detail: 'OTP sent successfully.',
+      },
+    } as AxiosResponse
 
-    await expect(handle401(error)).rejects.toBe(error)
+    vi.mocked(retryRequest).mockResolvedValue(retryResponse)
 
-    expect(retryRequest).not.toHaveBeenCalled()
+    const result = await handle401(error)
+
+    expect(retryRequest).toHaveBeenCalledExactlyOnceWith(error)
+    expect(result).toBe(retryResponse)
   })
 
-  it('rejects a 401 response from the two-factor verification endpoint', async () => {
+  it('delegates a 401 response from the two-factor verification endpoint to retryRequest', async () => {
     const error = createError(TWO_FACTOR.VERIFY)
+    const retryResponse = {
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {},
+      data: {
+        access: 'new-access-token',
+      },
+    } as AxiosResponse
 
-    await expect(handle401(error)).rejects.toBe(error)
+    vi.mocked(retryRequest).mockResolvedValue(retryResponse)
 
-    expect(retryRequest).not.toHaveBeenCalled()
+    const result = await handle401(error)
+
+    expect(retryRequest).toHaveBeenCalledExactlyOnceWith(error)
+    expect(result).toBe(retryResponse)
   })
 
   it('rejects a request that has already been retried', async () => {

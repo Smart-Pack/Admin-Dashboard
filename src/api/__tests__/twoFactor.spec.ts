@@ -30,6 +30,25 @@ describe('two-factor API', () => {
     expect(apiClient.post).toHaveBeenCalledWith(TWO_FACTOR.REQUEST)
     expect(result.detail).toBe('Verification code sent.')
   })
+  /**
+   * Verifies that requesting a two-factor authentication code
+   * converts an API detail error into a standard Error.
+   */
+  it('throws the API detail message when requesting a two-factor authentication code fails', async () => {
+    const error = {
+      response: {
+        data: {
+          detail: 'Unable to send verification code.',
+        },
+      },
+    }
+
+    vi.mocked(apiClient.post).mockRejectedValue(error)
+
+    await expect(request()).rejects.toThrow('Unable to send verification code.')
+
+    expect(apiClient.post).toHaveBeenCalledWith(TWO_FACTOR.REQUEST)
+  })
 
   /**
    * Verifies that the submitted OTP is sent to the verification endpoint

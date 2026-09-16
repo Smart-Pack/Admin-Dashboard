@@ -1,6 +1,7 @@
 import type { AxiosError } from 'axios'
 
-import { AUTH, TWO_FACTOR } from '../endpoints'
+import { AUTH } from '../endpoints'
+import router from '@/router'
 import { retryRequest, type RetryRequestConfig } from './retryRequest'
 
 /**
@@ -9,6 +10,9 @@ import { retryRequest, type RetryRequestConfig } from './retryRequest'
  * Authentication and two-factor endpoints are excluded from
  * the token refresh flow. Protected requests are retried once
  * after refreshing the access token.
+ *
+ * A failed refresh request indicates that the current session
+ * has expired and requires the user to log in again.
  *
  * @param error - Axios error containing the failed request.
  * @returns The retried request or the rejected error.
@@ -19,15 +23,17 @@ export async function handle401(error: AxiosError) {
   const url = originalRequest?.url ?? ''
 
   /**
+   * A failed token refresh means the current session has expired.
+   */
+  if (url.includes(AUTH.REFRESH)) {
+    await router.replace({ name: 'login' })
+    return Promise.reject(new Error('Session expired. Please log in again.'))
+  }
+
+  /**
    * Authentication endpoints must not trigger token refresh.
    */
-  if (
-    url.includes(AUTH.LOGIN) ||
-    url.includes(AUTH.REFRESH) ||
-    url.includes(AUTH.VERIFY) ||
-    url.includes(TWO_FACTOR.REQUEST) ||
-    url.includes(TWO_FACTOR.VERIFY)
-  ) {
+  if (url.includes(AUTH.LOGIN) || url.includes(AUTH.VERIFY)) {
     return Promise.reject(error)
   }
 
