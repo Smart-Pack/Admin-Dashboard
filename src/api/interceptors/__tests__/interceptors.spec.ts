@@ -1,5 +1,6 @@
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
 import type { AuthState } from '@/stores/modules/auth/state'
+import { AUTH } from '@/api/endpoints'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import apiClient from '@/api/client'
@@ -105,6 +106,43 @@ describe('API interceptors', () => {
       expect(responseSuccessHandler(response)).toBe(response)
     })
 
+    it('sets the error message from the API response detail', async () => {
+      const error = {
+        response: {
+          status: 400,
+          data: {
+            detail: 'Invalid request.',
+          },
+        },
+        config: {
+          url: '/v1/users/me/',
+        },
+        message: 'Request failed',
+      } as AxiosError
+
+      await expect(responseErrorHandler(error)).rejects.toBe(error)
+
+      expect(error.message).toBe('Invalid request.')
+      expect(handle401).not.toHaveBeenCalled()
+    })
+
+    it('sets a default message when the server cannot be reached', async () => {
+      const error = {
+        response: undefined,
+        config: {
+          url: '/v1/users/me/',
+        },
+        message: 'Network Error',
+      } as AxiosError
+
+      await expect(responseErrorHandler(error)).rejects.toBe(error)
+
+      expect(error.message).toBe(
+        'Unable to reach the server. Please check your network connection.',
+      )
+      expect(handle401).not.toHaveBeenCalled()
+    })
+
     it('delegates 401 errors to handle401', async () => {
       const error = {
         response: {
@@ -131,6 +169,25 @@ describe('API interceptors', () => {
 
       expect(handle401).toHaveBeenCalledExactlyOnceWith(error)
       expect(result).toBe(retryResponse)
+    })
+
+    it('delegates refresh errors to handle401', async () => {
+      const error = {
+        response: {
+          status: 500,
+        },
+        config: {
+          url: AUTH.REFRESH,
+        },
+      } as AxiosError
+
+      const refreshError = new Error('Session expired.')
+
+      vi.mocked(handle401).mockRejectedValue(refreshError)
+
+      await expect(responseErrorHandler(error)).rejects.toBe(refreshError)
+
+      expect(handle401).toHaveBeenCalledExactlyOnceWith(error)
     })
 
     it('rejects non-401 errors unchanged', async () => {
