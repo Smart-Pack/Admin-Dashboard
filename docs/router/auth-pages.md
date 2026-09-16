@@ -18,3 +18,6 @@ Allows users to authenticate using their email address and password. After succe
 
 Allows users to verify their identity using the OTP sent to their email address after successful login. The user enters the six-digit OTP, which is validated before access to the application is granted. Users can also request a new OTP, subject to the resend cooldown period. If verification fails, the appropriate error message is displayed.
 
+## Finalize Account
+
+Allows users who have not yet finalized their account to set a new password and accept the SmartPack terms and conditions before accessing the dashboard. Users are redirected to this page when account finalization is required. After successfully changing their password and accepting the terms and conditions, the user's account information is refreshed and they are redirected to the dashboard.
