@@ -1,5 +1,10 @@
 import { defineStore } from 'pinia'
 
+export interface Breadcrumb {
+  name: string
+  breadcrumb: string
+}
+
 /**
  * UI state store.
  *
@@ -17,6 +22,13 @@ export const useUiStore = defineStore('ui', {
      * Tracks whether light mode is currently active.
      */
     isLightMode: window.matchMedia('(prefers-color-scheme: light)').matches,
+    /**
+     * Stores the breadcrumb entries for the current dashboard route.
+     *
+     * Each entry contains the route name and the label displayed in the
+     * breadcrumb navigation.
+     */
+    breadcrumbs: [] as Breadcrumb[],
   }),
 
   getters: {
@@ -45,5 +57,13 @@ export const useUiStore = defineStore('ui', {
     updateIsLightMode(value: boolean) {
       this.isLightMode = value
     },
+    /**
+     * Update the current dashboard breadcrumb entries.
+     */
+    updateBreadcrumbs(value: Breadcrumb[]) {
+      this.breadcrumbs = value
+    },
   },
 })
+
+export type UiStore = ReturnType<typeof useUiStore>

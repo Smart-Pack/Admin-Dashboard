@@ -84,6 +84,7 @@ const routes: RouteRecordRaw[] = [
     path: '/dashboard',
     component: RouterViewWrapper,
     meta: /** @type {AppRouteMeta} */ {
+      breadcrumb: 'Home',
       requiresAuth: true,
     },
     children: [
@@ -92,7 +93,7 @@ const routes: RouteRecordRaw[] = [
         path: '',
         name: 'dashboard',
         component: () => import('@/views/Dashboard/index.vue'),
-        meta: { title: 'Home' },
+        meta: { breadcrumb: 'Home', title: 'Home' },
       },
     ],
   },

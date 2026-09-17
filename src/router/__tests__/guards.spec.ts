@@ -5,17 +5,20 @@ import { createPinia, setActivePinia } from 'pinia'
 import { setupRouterGuard } from '../guards'
 import routes from '../routes'
 import { useAuthStore } from '@/stores/modules/auth'
+import { useUiStore } from '@/stores/modules/ui'
 import { mockUser } from '@/tests/constants'
 
 describe('Router Guard', () => {
   let router: ReturnType<typeof createRouter>
   let authStore: ReturnType<typeof useAuthStore>
+  let uiStore: ReturnType<typeof useUiStore>
 
   beforeEach(() => {
     const pinia = createPinia()
     setActivePinia(pinia)
 
     authStore = useAuthStore(pinia)
+    uiStore = useUiStore(pinia)
 
     router = createRouter({
       history: createMemoryHistory(),
@@ -47,6 +50,52 @@ describe('Router Guard', () => {
       await router.push('/untitled')
 
       expect(document.title).toBe('SmartPack Admin Dashboard')
+    })
+  })
+
+  describe('Breadcrumbs', () => {
+    beforeEach(() => {
+      authStore.loggedInUser = {
+        ...mockUser,
+        changed_password_after_initial_login: true,
+        two_factor_enabled: false,
+      }
+    })
+    it('clears breadcrumbs when navigating to a route without breadcrumb metadata', async () => {
+      authStore.loggedInUser = null
+
+      uiStore.breadcrumbs = [
+        {
+          name: 'dashboard',
+          breadcrumb: 'Home',
+        },
+      ]
+
+      await router.push('/auth/login')
+
+      expect(router.currentRoute.value.name).toBe('login')
+      expect(uiStore.breadcrumbs).toEqual([])
+    })
+
+    it('creates a breadcrumb for a route with breadcrumb metadata', async () => {
+      await router.push('/dashboard')
+
+      expect(uiStore.breadcrumbs).toEqual([
+        {
+          name: 'dashboard',
+          breadcrumb: 'Home',
+        },
+      ])
+    })
+
+    it('removes duplicate breadcrumbs and keeps the named route', async () => {
+      await router.push('/dashboard')
+
+      expect(uiStore.breadcrumbs).toHaveLength(1)
+      expect(uiStore.breadcrumbs[0]).toEqual({
+        name: 'dashboard',
+        breadcrumb: 'Home',
+      })
     })
   })
 

@@ -2,7 +2,9 @@
 
 import type { Pinia } from 'pinia'
 import type { Router } from 'vue-router'
-import { useAuthStore } from '@/stores'
+import { useAuthStore, useUiStore } from '@/stores'
+import type { RouteLocationNormalized } from 'vue-router'
+import type { UiStore, Breadcrumb } from '@/stores/modules/ui'
 
 /**
  * @module router/guards
@@ -17,6 +19,50 @@ import { useAuthStore } from '@/stores'
  */
 const formatTitle = (name: string): string =>
   name ? name.replace(/-/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase()) : ''
+
+/**
+ * Updates the dashboard breadcrumbs based on the matched route records.
+ *
+ * Only routes with a `breadcrumb` meta property are included.
+ * Duplicate breadcrumb labels are removed while preserving the first
+ * matching route name.
+ *
+ * @param toRoute - The destination route.
+ * @param uiStore - The UI store used to persist the breadcrumbs.
+ */
+function updateBreadcrumbs(toRoute: RouteLocationNormalized, uiStore: UiStore) {
+  if (!toRoute.meta.breadcrumb) {
+    uiStore.updateBreadcrumbs([])
+    return
+  }
+
+  const breadcrumbs = Array.from(
+    toRoute.matched
+      .filter((route) => route.meta.breadcrumb)
+      .reduce((map, route) => {
+        const breadcrumb = String(route.meta.breadcrumb)
+        const name = route.name ? String(route.name) : ''
+
+        const existing = map.get(breadcrumb)
+
+        if (!existing || (!existing.name && name)) {
+          map.set(breadcrumb, {
+            name,
+            breadcrumb,
+          })
+        }
+
+        return map
+      }, new Map<string, Breadcrumb>())
+      .values(),
+  )
+
+  if (breadcrumbs.length > 1) {
+    breadcrumbs[0]!.name = 'dashboard'
+  }
+
+  uiStore.updateBreadcrumbs(breadcrumbs)
+}
 
 /**
  * Registers the global router guard.
@@ -37,8 +83,11 @@ const formatTitle = (name: string): string =>
  */
 export function setupRouterGuard(router: Router, pinia: Pinia): void {
   const authStore = useAuthStore(pinia)
+  const uiStore = useUiStore(pinia)
 
   router.beforeEach((toRoute) => {
+    updateBreadcrumbs(toRoute, uiStore)
+
     document.title = toRoute.meta.title
       ? `${toRoute.meta.title} - SmartPack Admin`
       : toRoute.name

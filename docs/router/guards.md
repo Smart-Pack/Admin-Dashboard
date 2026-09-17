@@ -76,3 +76,15 @@ The guard runs before every route navigation and evaluates:
 5. Whether a redirect is required.
 
 Redirects use named routes and preserve the original destination where appropriate through the `redirect` query parameter.
+
+### Breadcrumbs
+
+Breadcrumbs are managed by the router guard based on route metadata and stored in the UI store. The `ContentHeader` component consumes this state to display the current navigation hierarchy.
+
+* Routes define breadcrumb labels through route metadata.
+* The router guard builds and updates the breadcrumb trail during navigation.
+* Duplicate breadcrumbs are removed.
+* The UI store holds the current breadcrumb state.
+* `ContentHeader` renders the breadcrumb trail and provides navigation for previous levels.
+* Routes without breadcrumb metadata clear the breadcrumb state.
+
