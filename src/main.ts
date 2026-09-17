@@ -10,13 +10,16 @@ import { notifySuccess, notifyError, deleteModal } from './helpers/swalNotifier'
 import { setupValidation } from './helpers/validation'
 import router from './router'
 import VueTelInput from 'vue-tel-input'
+import { useAuthStore } from './stores'
 
 const app = createApp(App)
+const pinia = createPinia()
 
-app.use(createPinia())
+app.use(pinia)
 app.use(router)
 app.use(VueTelInput)
 setupValidation()
+
 /**
  * Registers the centralized API layer as a global property
  * so components can access it through `this.$api.*`.
@@ -33,4 +36,8 @@ app.config.globalProperties.$notifySuccess = notifySuccess
  */
 app.config.globalProperties.$notifyError = notifyError
 app.config.globalProperties.$deleteModal = deleteModal
+
+const authStore = useAuthStore(pinia)
+await authStore.initializeAuth()
+
 app.mount('#app')
