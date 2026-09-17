@@ -70,7 +70,7 @@ const routes: RouteRecordRaw[] = [
         path: 'change-password',
         name: 'change-password',
         component: () => import('@/views/Auth/ChangePassword.vue'),
-        meta: { title: 'Finalize Account' },
+        meta: { requiresAuth: true, title: 'Finalize Account' },
       },
     ],
   },

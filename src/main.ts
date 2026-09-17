@@ -11,12 +11,12 @@ import { setupValidation } from './helpers/validation'
 import router from './router'
 import VueTelInput from 'vue-tel-input'
 import { useAuthStore } from './stores'
+import { setupRouterGuard } from './router/guards'
 
 const app = createApp(App)
 const pinia = createPinia()
 
 app.use(pinia)
-app.use(router)
 app.use(VueTelInput)
 setupValidation()
 
@@ -36,8 +36,19 @@ app.config.globalProperties.$notifySuccess = notifySuccess
  */
 app.config.globalProperties.$notifyError = notifyError
 app.config.globalProperties.$deleteModal = deleteModal
-
+/**
+ * Initializes authentication state before starting the router.
+ *
+ * Authentication is restored before the router is installed so that the
+ * initial navigation has access to the restored authentication state.
+ * The router guard is then registered and the router waits for its initial
+ * navigation to complete before the application is mounted.
+ */
 const authStore = useAuthStore(pinia)
 await authStore.initializeAuth()
+
+setupRouterGuard(router, pinia)
+app.use(router)
+await router.isReady()
 
 app.mount('#app')
