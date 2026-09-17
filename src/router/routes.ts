@@ -1,25 +1,10 @@
 import type { RouteRecordRaw } from 'vue-router'
-import { RouterView } from 'vue-router'
-import { h } from 'vue'
 
 /**
  * @module router/routes
  * @description Declares the application's Vue Router configuration, including dashboard/auth layouts,
  * nested feature routes for analytics, gateways, vouchers, sessions, content, users, SMEs, and the catch-all redirect.
  */
-
-/**
- * Dummy wrapper component for nested routes.
- * This lets us declare groups of child routes under a single parent without introducing additional layout markup.
- *
- * @returns {import('vue').VNode}
- */
-const RouterViewWrapper = {
-  name: 'RouterViewWrapper',
-  render() {
-    return h(RouterView)
-  },
-}
 
 /**
  * Application routes.
@@ -82,7 +67,7 @@ const routes: RouteRecordRaw[] = [
    */
   {
     path: '/dashboard',
-    component: RouterViewWrapper,
+    component: () => import('@/layout/Dashboard/index.vue'),
     meta: /** @type {AppRouteMeta} */ {
       breadcrumb: 'Home',
       requiresAuth: true,

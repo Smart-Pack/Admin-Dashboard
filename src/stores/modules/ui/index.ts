@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import type { RouteRecordNameGeneric } from 'vue-router'
 
 export interface Breadcrumb {
   name: string
@@ -87,7 +88,11 @@ export const useUiStore = defineStore('ui', {
      * Check whether a breadcrumb exists for a given route.
      */
     hasBreadcrumb: (state) => {
-      return (itemName: string, routeName: string, parentName?: string): boolean => {
+      return (
+        itemName: string,
+        routeName: RouteRecordNameGeneric,
+        parentName?: string,
+      ): boolean => {
         if (parentName) {
           const hasParent = state.breadcrumbs.some((breadcrumb) => breadcrumb.name === parentName)
 
