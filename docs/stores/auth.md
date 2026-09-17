@@ -96,6 +96,29 @@ The `refreshToken()` action accepts an optional `skipAuthRedirect` parameter tha
 
 `initializeAuth()` uses `refreshToken(true)` because authentication restoration occurs during application startup. A failed restoration should not trigger an additional navigation; the application can instead continue as an unauthenticated session.
 
+## Getters
+
+### `hasChangedPassword`
+
+Indicates whether the authenticated user has changed their password after
+the initial login.
+
+Returns `false` when no user is logged in.
+
+### `isFullyAuthenticated`
+
+Indicates whether the user has completed the authentication process.
+
+The result depends on whether two-factor authentication is enabled:
+
+- No logged-in user → `false`
+- 2FA disabled → `true` once the user information is available
+- 2FA enabled → `true` only when an access token is available and its
+  `otp_verified` claim is `true`
+- 2FA enabled without an access token → `false`
+
+The OTP claim is evaluated by the `isOtpVerified` authentication utility.
+
 ## Related Modules
 
 - **API authentication:** `src/api/modules/auth.ts`
