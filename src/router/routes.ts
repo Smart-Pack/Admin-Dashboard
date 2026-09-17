@@ -95,6 +95,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/Dashboard/index.vue'),
         meta: { breadcrumb: 'Home', title: 'Home' },
       },
+      {
+        path: 'my-profile',
+        name: 'my-profile',
+        component: () => import('@/views/Dashboard/index.vue'),
+        meta: { breadcrumb: 'My Profile', title: 'My Profile' },
+      },
     ],
   },
 ]

@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import ContentHeader from '@/layout/Dashboard/ContentHeader.vue'
+import ContentHeader from '@/layout/Dashboard/TopBar.vue'
 
 defineOptions({
   name: 'DashboardView',
