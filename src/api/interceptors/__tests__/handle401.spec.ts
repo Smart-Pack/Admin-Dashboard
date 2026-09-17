@@ -51,6 +51,15 @@ describe('handle401', () => {
     })
     expect(retryRequest).not.toHaveBeenCalled()
   })
+  it('does not redirect to login when skipAuthRedirect is true for the refresh endpoint', async () => {
+    const error = createError(AUTH.REFRESH)
+    error.config!.skipAuthRedirect = true
+
+    await expect(handle401(error)).rejects.toThrow('Session expired. Please log in again.')
+
+    expect(router.replace).not.toHaveBeenCalled()
+    expect(retryRequest).not.toHaveBeenCalled()
+  })
 
   it('rejects a 401 response from the token verification endpoint', async () => {
     const error = createError(AUTH.VERIFY)

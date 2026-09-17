@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { auth, twoFactor } from '@/api'
 import { getMe } from '@/api/modules/users'
+import type { RefreshOptions } from '@/api/modules/auth'
 import type { User } from '@/api/modules/users'
 
 import { actions, type AuthActions } from '../actions'
@@ -13,7 +14,7 @@ vi.mock('@/api/modules/users', () => ({
 vi.mock('@/api', () => ({
   auth: {
     login: vi.fn<() => Promise<{ access: string; refresh: string }>>(),
-    refresh: vi.fn<() => Promise<{ access: string; refresh: string }>>(),
+    refresh: vi.fn<(options?: RefreshOptions) => Promise<{ access: string; refresh: string }>>(),
   },
   twoFactor: {
     request: vi.fn<() => Promise<{ detail: string }>>(),
@@ -77,7 +78,22 @@ describe('auth store actions', () => {
 
       await store.refreshToken()
 
-      expect(auth.refresh).toHaveBeenCalledExactlyOnceWith()
+      expect(auth.refresh).toHaveBeenCalledExactlyOnceWith({
+        skipAuthRedirect: false,
+      })
+      expect(store.accessToken).toBe('new-access-token')
+    })
+    it('refreshes the access token without redirect when requested', async () => {
+      vi.mocked(auth.refresh).mockResolvedValue({
+        access: 'new-access-token',
+        refresh: 'refresh-token',
+      })
+
+      await store.refreshToken(true)
+
+      expect(auth.refresh).toHaveBeenCalledExactlyOnceWith({
+        skipAuthRedirect: true,
+      })
       expect(store.accessToken).toBe('new-access-token')
     })
 

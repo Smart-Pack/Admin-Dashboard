@@ -24,9 +24,13 @@ export async function handle401(error: AxiosError) {
 
   /**
    * A failed token refresh means the current session has expired.
+   * Redirect to login unless explicitly requested to skip the redirect.
    */
   if (url.includes(AUTH.REFRESH)) {
-    await router.replace({ name: 'login' })
+    if (error.config?.skipAuthRedirect !== true) {
+      await router.replace({ name: 'login' })
+    }
+
     return Promise.reject(new Error('Session expired. Please log in again.'))
   }
 

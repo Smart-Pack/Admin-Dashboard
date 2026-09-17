@@ -15,7 +15,7 @@ export interface AuthActions {
   createTwoFaToken(): Promise<void>
   fetchUser(): Promise<void>
   logIn(payload: LoginRequest): Promise<string>
-  refreshToken(): Promise<void>
+  refreshToken(skipAuthRedirect?: boolean): Promise<void>
   verifyTwoFaToken(payload: TwoFactorVerifyRequest): Promise<string>
 }
 
@@ -36,13 +36,14 @@ export const actions: AuthActions = {
   /**
    * Refreshes the authentication token using the refresh token.
    *
+   * @param skipAuthRedirect - Whether to skip redirecting to login if the refresh fails.
    * @throws The error returned by the refresh request.
    */
-  async refreshToken(this: AuthStoreContext) {
+  async refreshToken(this: AuthStoreContext, skipAuthRedirect = false) {
     this.accessToken = null
 
     try {
-      const { access } = await auth.refresh()
+      const { access } = await auth.refresh({ skipAuthRedirect })
 
       this.accessToken = access
     } catch (error) {
