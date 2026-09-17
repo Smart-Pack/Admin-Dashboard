@@ -16,7 +16,7 @@ export interface AuthActions {
   fetchUser(): Promise<void>
   logIn(payload: LoginRequest): Promise<string>
   refreshToken(): Promise<void>
-  verifyTwoFaToken(payload: TwoFactorVerifyRequest): Promise<void>
+  verifyTwoFaToken(payload: TwoFactorVerifyRequest): Promise<string>
 }
 
 type AuthStoreContext = AuthState & AuthActions
@@ -138,8 +138,9 @@ export const actions: AuthActions = {
    * @param payload - The 2FA token payload.
    * @returns A promise that resolves when verification is complete.
    */
-  async verifyTwoFaToken(this: AuthStoreContext, payload: TwoFactorVerifyRequest): Promise<void> {
+  async verifyTwoFaToken(this: AuthStoreContext, payload: TwoFactorVerifyRequest): Promise<string> {
     const { access } = await twoFactor.verify(payload)
     this.accessToken = access
+    return 'OTP confirmed successfully'
   },
 }
