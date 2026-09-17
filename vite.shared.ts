@@ -11,4 +11,7 @@ export const sharedConfig = {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  test: {
+    setupFiles: ['./src/tests/setup.ts'],
+  },
 }

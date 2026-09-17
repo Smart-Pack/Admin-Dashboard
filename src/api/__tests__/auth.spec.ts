@@ -105,7 +105,9 @@ describe('auth API', () => {
 
     const result = await refresh()
 
-    expect(apiClient.post).toHaveBeenCalledWith(AUTH.REFRESH)
+    expect(apiClient.post).toHaveBeenCalledWith(AUTH.REFRESH, undefined, {
+      skipAuthRedirect: false,
+    })
     expect(result.access).toBe('new-access-token')
     expect(result.refresh).toBe('new-refresh-token')
   })

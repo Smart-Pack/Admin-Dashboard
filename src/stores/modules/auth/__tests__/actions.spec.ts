@@ -2,10 +2,30 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { auth, twoFactor } from '@/api'
 import { getMe } from '@/api/modules/users'
+import type { RefreshOptions } from '@/api/modules/auth'
 import type { User } from '@/api/modules/users'
 
 import { actions, type AuthActions } from '../actions'
 import type { AuthState } from '../state'
+
+const mockUser: User = {
+  id: 1,
+  first_name: 'John',
+  last_name: 'Doe',
+  full_name: 'John Doe',
+  email: 'john@example.com',
+  phone: '+254712345678',
+  profile_pic: null,
+  account_type: 'internal',
+  role: 'staff',
+  date_of_birth: '2000-01-01',
+  gender: 'male',
+  changed_password_after_initial_login: true,
+  created_at: '2026-09-15T12:33:13.497Z',
+  updated_at: '2026-09-15T12:33:13.497Z',
+  two_factor_enabled: true,
+  status: 'active',
+}
 
 vi.mock('@/api/modules/users', () => ({
   getMe: vi.fn<() => Promise<User>>(),
@@ -13,7 +33,7 @@ vi.mock('@/api/modules/users', () => ({
 vi.mock('@/api', () => ({
   auth: {
     login: vi.fn<() => Promise<{ access: string; refresh: string }>>(),
-    refresh: vi.fn<() => Promise<{ access: string; refresh: string }>>(),
+    refresh: vi.fn<(options?: RefreshOptions) => Promise<{ access: string; refresh: string }>>(),
   },
   twoFactor: {
     request: vi.fn<() => Promise<{ detail: string }>>(),
@@ -77,7 +97,22 @@ describe('auth store actions', () => {
 
       await store.refreshToken()
 
-      expect(auth.refresh).toHaveBeenCalledExactlyOnceWith()
+      expect(auth.refresh).toHaveBeenCalledExactlyOnceWith({
+        skipAuthRedirect: false,
+      })
+      expect(store.accessToken).toBe('new-access-token')
+    })
+    it('refreshes the access token without redirect when requested', async () => {
+      vi.mocked(auth.refresh).mockResolvedValue({
+        access: 'new-access-token',
+        refresh: 'refresh-token',
+      })
+
+      await store.refreshToken(true)
+
+      expect(auth.refresh).toHaveBeenCalledExactlyOnceWith({
+        skipAuthRedirect: true,
+      })
       expect(store.accessToken).toBe('new-access-token')
     })
 
@@ -316,6 +351,48 @@ describe('auth store actions', () => {
 
       expect(twoFactor.verify).toHaveBeenCalledWith(payload)
       expect(store.accessToken).toBe('new-access-token')
+    })
+  })
+  describe('initializeAuth', () => {
+    it('refreshes the token without redirect and fetches the user successfully', async () => {
+      vi.mocked(auth.refresh).mockResolvedValue({
+        access: 'new-access-token',
+        refresh: 'refresh-token',
+      })
+      vi.mocked(getMe).mockResolvedValue(mockUser)
+
+      await store.initializeAuth()
+
+      expect(auth.refresh).toHaveBeenCalledExactlyOnceWith({
+        skipAuthRedirect: true,
+      })
+      expect(getMe).toHaveBeenCalledTimes(1)
+    })
+
+    it('does nothing when token refresh fails', async () => {
+      vi.mocked(auth.refresh).mockRejectedValue(new Error('Refresh failed'))
+
+      await expect(store.initializeAuth()).resolves.toBeUndefined()
+
+      expect(auth.refresh).toHaveBeenCalledExactlyOnceWith({
+        skipAuthRedirect: true,
+      })
+      expect(getMe).not.toHaveBeenCalled()
+    })
+
+    it('does nothing when fetching the user fails', async () => {
+      vi.mocked(auth.refresh).mockResolvedValue({
+        access: 'new-access-token',
+        refresh: 'refresh-token',
+      })
+      vi.mocked(getMe).mockRejectedValue(new Error('Failed to fetch user'))
+
+      await expect(store.initializeAuth()).resolves.toBeUndefined()
+
+      expect(auth.refresh).toHaveBeenCalledExactlyOnceWith({
+        skipAuthRedirect: true,
+      })
+      expect(getMe).toHaveBeenCalledTimes(1)
     })
   })
 })

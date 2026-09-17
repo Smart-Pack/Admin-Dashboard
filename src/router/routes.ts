@@ -1,6 +1,12 @@
 import type { RouteRecordRaw } from 'vue-router'
 
 /**
+ * @module router/routes
+ * @description Declares the application's Vue Router configuration, including dashboard/auth layouts,
+ * nested feature routes for analytics, gateways, vouchers, sessions, content, users, SMEs, and the catch-all redirect.
+ */
+
+/**
  * Application routes.
  *
  * @type {RouteRecordRaw[]}
@@ -49,7 +55,36 @@ const routes: RouteRecordRaw[] = [
         path: 'change-password',
         name: 'change-password',
         component: () => import('@/views/Auth/ChangePassword.vue'),
-        meta: { title: 'Finalize Account' },
+        meta: { requiresAuth: true, title: 'Finalize Account' },
+      },
+    ],
+  },
+
+  /**
+   * Dashboard routes.
+   *
+   * @type {RouteRecordRaw}
+   */
+  {
+    path: '/dashboard',
+    component: () => import('@/layout/Dashboard/index.vue'),
+    meta: /** @type {AppRouteMeta} */ {
+      breadcrumb: 'Home',
+      requiresAuth: true,
+    },
+    children: [
+      // Dashboard home
+      {
+        path: '',
+        name: 'dashboard',
+        component: () => import('@/views/Dashboard/index.vue'),
+        meta: { breadcrumb: 'Home', title: 'Home' },
+      },
+      {
+        path: 'my-profile',
+        name: 'my-profile',
+        component: () => import('@/views/Dashboard/index.vue'),
+        meta: { breadcrumb: 'My Profile', title: 'My Profile' },
       },
     ],
   },

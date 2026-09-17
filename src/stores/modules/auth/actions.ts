@@ -14,9 +14,10 @@ export interface AuthActions {
   clearStore(): void
   createTwoFaToken(): Promise<void>
   fetchUser(): Promise<void>
+  initializeAuth(): Promise<void>
   logIn(payload: LoginRequest): Promise<string>
-  refreshToken(): Promise<void>
-  verifyTwoFaToken(payload: TwoFactorVerifyRequest): Promise<void>
+  refreshToken(skipAuthRedirect?: boolean): Promise<void>
+  verifyTwoFaToken(payload: TwoFactorVerifyRequest): Promise<string>
 }
 
 type AuthStoreContext = AuthState & AuthActions
@@ -36,13 +37,14 @@ export const actions: AuthActions = {
   /**
    * Refreshes the authentication token using the refresh token.
    *
+   * @param skipAuthRedirect - Whether to skip redirecting to login if the refresh fails.
    * @throws The error returned by the refresh request.
    */
-  async refreshToken(this: AuthStoreContext) {
+  async refreshToken(this: AuthStoreContext, skipAuthRedirect = false) {
     this.accessToken = null
 
     try {
-      const { access } = await auth.refresh()
+      const { access } = await auth.refresh({ skipAuthRedirect })
 
       this.accessToken = access
     } catch (error) {
@@ -138,8 +140,23 @@ export const actions: AuthActions = {
    * @param payload - The 2FA token payload.
    * @returns A promise that resolves when verification is complete.
    */
-  async verifyTwoFaToken(this: AuthStoreContext, payload: TwoFactorVerifyRequest): Promise<void> {
+  async verifyTwoFaToken(this: AuthStoreContext, payload: TwoFactorVerifyRequest): Promise<string> {
     const { access } = await twoFactor.verify(payload)
     this.accessToken = access
+    return 'OTP confirmed successfully'
+  },
+  /**
+   * Restores the authentication state on application startup.
+   *
+   * Refreshes the access token without redirecting on failure, then
+   * fetches the authenticated user's details.
+   */
+  async initializeAuth(this: AuthStoreContext) {
+    try {
+      await this.refreshToken(true)
+      await this.fetchUser()
+    } catch {
+      // No valid session to restore.
+    }
   },
 }

@@ -23,6 +23,10 @@ export interface ResetPasswordRequest {
   new_password: string
 }
 
+export interface RefreshOptions {
+  skipAuthRedirect?: boolean
+}
+
 export interface VerifyRequest {
   token: string
 }
@@ -65,10 +69,14 @@ export const logout = async () => {
  * Refreshes the authentication tokens using the refresh token
  * stored in the authentication cookie.
  *
+ * @param options - Optional configuration for the refresh request.
  * @returns Refreshed authentication tokens.
  */
-export const refresh = async () => {
-  const response = await apiClient.post<LoginResponse>(AUTH.REFRESH)
+export const refresh = async (options?: RefreshOptions) => {
+  const response = await apiClient.post<LoginResponse>(AUTH.REFRESH, undefined, {
+    skipAuthRedirect: options?.skipAuthRedirect ?? false,
+  })
+
   return response.data
 }
 
