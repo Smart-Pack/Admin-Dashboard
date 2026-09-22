@@ -97,7 +97,7 @@ export const editMe = async (payload: EditMePayload): Promise<User> => {
   formData.append('first_name', payload.first_name)
   formData.append('last_name', payload.last_name)
   formData.append('email', payload.email)
-  formData.append('phone', payload.phone)
+  formData.append('phone', payload.phone.replace(/\s+/g, ''))
   formData.append('date_of_birth', payload.date_of_birth)
   formData.append('gender', payload.gender)
 
