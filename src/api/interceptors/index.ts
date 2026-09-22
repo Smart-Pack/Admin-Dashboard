@@ -45,6 +45,8 @@ apiClient.interceptors.response.use(
      */
     if (error.response?.data?.detail) {
       error.message = error.response.data.detail
+    } else if (error.response?.status === 400) {
+      error.message = 'Please correct the highlighted fields.'
     } else if (!error.response) {
       error.message = 'Unable to reach the server. Please check your network connection.'
     }
