@@ -280,9 +280,9 @@ export default {
     const showPassword = ref(false)
     const genderOptions = ref([
       { value: '', label: 'Select Gender' },
-      { value: 'Female', label: 'Female' },
-      { value: 'Male', label: 'Male' },
-      { value: 'Other', label: 'Other' },
+      { value: 'female', label: 'Female' },
+      { value: 'male', label: 'Male' },
+      { value: 'other', label: 'Other' },
     ])
 
     const userOptions = ref([
