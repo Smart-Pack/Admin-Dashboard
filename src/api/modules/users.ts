@@ -109,3 +109,15 @@ export const editMe = async (payload: EditMePayload): Promise<User> => {
 
   return response.data
 }
+
+/**
+ * Sets a new password for the authenticated user.
+ *
+ * @param payload - The password update payload.
+ * @param payload.current_password - The user's current password.
+ * @param payload.new_password - The user's new password.
+ * @returns A promise that resolves with a success message.
+ */
+export const setPassword = (payload: UpdatePasswordPayload): Promise<string> => {
+  return apiClient.post(USERS.SET_PASSWORD, payload).then(() => 'Password Changed successfully.')
+}

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import apiClient from '@/api/client'
 import { USERS } from '@/api/endpoints'
-import { editMe, getMe, initialPassword, type User } from '@/api/modules/users'
+import { editMe, getMe, initialPassword, setPassword, type User } from '@/api/modules/users'
 
 vi.mock('@/api/client', () => ({
   default: {
@@ -257,6 +257,23 @@ describe('Users API', () => {
       await expect(initialPassword(payload)).rejects.toBe(error)
 
       expect(apiClient.post).toHaveBeenCalledWith(USERS.INITIAL_PASSWORD, payload)
+    })
+  })
+  describe('setPassword', () => {
+    it('sets a new password for the authenticated user', async () => {
+      vi.mocked(apiClient.post).mockResolvedValueOnce({
+        data: {},
+      } as never)
+
+      const payload = {
+        current_password: 'OldPassword123!',
+        new_password: 'NewPassword123!',
+      }
+
+      const response = await setPassword(payload)
+
+      expect(apiClient.post).toHaveBeenCalledWith(USERS.SET_PASSWORD, payload)
+      expect(response).toBe('Password Changed successfully.')
     })
   })
 })

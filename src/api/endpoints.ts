@@ -19,5 +19,6 @@ export const TWO_FACTOR = {
 
 export const USERS = {
   INITIAL_PASSWORD: 'v1/users/initial_password/',
+  SET_PASSWORD: 'v1/users/set_password/',
   ME: 'v1/users/me/',
 } as const
