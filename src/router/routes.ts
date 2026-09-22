@@ -12,6 +12,11 @@ import type { RouteRecordRaw } from 'vue-router'
  * @type {RouteRecordRaw[]}
  */
 const routes: RouteRecordRaw[] = [
+  // Root redirect
+  {
+    path: '/',
+    redirect: { name: 'dashboard' },
+  },
   /**
    * Authentication routes.
    *
@@ -83,10 +88,19 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'my-profile',
         name: 'my-profile',
-        component: () => import('@/views/Dashboard/index.vue'),
+        component: () => import('@/views/Users/profile.vue'),
         meta: { breadcrumb: 'My Profile', title: 'My Profile' },
       },
     ],
+  },
+  // Fallback route for any unmatched URL so users land on the dashboard
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'catch-all',
+    redirect: (to) => ({
+      name: 'dashboard',
+      query: { redirect: to.fullPath },
+    }),
   },
 ]
 

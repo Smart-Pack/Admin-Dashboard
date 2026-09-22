@@ -142,6 +142,23 @@ describe('API interceptors', () => {
       )
       expect(handle401).not.toHaveBeenCalled()
     })
+    it('sets a default message for bad requests', async () => {
+      const error = {
+        response: {
+          status: 400,
+          data: {},
+        },
+        config: {
+          url: '/v1/users/me/',
+        },
+        message: 'Request failed with status code 400',
+      } as AxiosError
+
+      await expect(responseErrorHandler(error)).rejects.toBe(error)
+
+      expect(error.message).toBe('Please correct the highlighted fields.')
+      expect(handle401).not.toHaveBeenCalled()
+    })
 
     it('delegates 401 errors to handle401', async () => {
       const error = {

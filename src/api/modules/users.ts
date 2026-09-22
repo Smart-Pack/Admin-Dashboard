@@ -31,6 +31,16 @@ export interface User {
   status: string
 }
 
+export type EditMePayload = {
+  first_name: string
+  last_name: string
+  email: string
+  phone: string
+  profile_pic?: File
+  date_of_birth: string
+  gender: 'male' | 'female' | 'other'
+}
+
 /**
  * Fetches information about the currently authenticated user.
  *
@@ -73,4 +83,41 @@ export const initialPassword = ({
 
       throw error
     })
+}
+
+/**
+ * Updates information about the currently authenticated user.
+ *
+ * @param payload - The user fields to update.
+ * @returns The updated user's information.
+ */
+export const editMe = async (payload: EditMePayload): Promise<User> => {
+  const formData = new FormData()
+
+  formData.append('first_name', payload.first_name)
+  formData.append('last_name', payload.last_name)
+  formData.append('email', payload.email)
+  formData.append('phone', payload.phone.replace(/\s+/g, ''))
+  formData.append('date_of_birth', payload.date_of_birth)
+  formData.append('gender', payload.gender)
+
+  if (payload.profile_pic) {
+    formData.append('profile_pic', payload.profile_pic)
+  }
+
+  const response = await apiClient.patch<User>(USERS.ME, formData)
+
+  return response.data
+}
+
+/**
+ * Sets a new password for the authenticated user.
+ *
+ * @param payload - The password update payload.
+ * @param payload.current_password - The user's current password.
+ * @param payload.new_password - The user's new password.
+ * @returns A promise that resolves with a success message.
+ */
+export const setPassword = (payload: UpdatePasswordPayload): Promise<string> => {
+  return apiClient.post(USERS.SET_PASSWORD, payload).then(() => 'Password Changed successfully.')
 }

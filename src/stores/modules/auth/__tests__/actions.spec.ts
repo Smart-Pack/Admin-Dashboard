@@ -395,4 +395,16 @@ describe('auth store actions', () => {
       expect(getMe).toHaveBeenCalledTimes(1)
     })
   })
+  describe('setLoggedInUser', () => {
+    it('updates the authenticated user in the store', () => {
+      const updatedUser = {
+        ...mockUser,
+        first_name: 'Updated',
+      }
+
+      store.setLoggedInUser(updatedUser)
+
+      expect(store.loggedInUser).toEqual(updatedUser)
+    })
+  })
 })
