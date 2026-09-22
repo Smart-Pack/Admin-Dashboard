@@ -88,7 +88,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'my-profile',
         name: 'my-profile',
-        component: () => import('@/views/Dashboard/index.vue'),
+        component: () => import('@/views/Users/profile.vue'),
         meta: { breadcrumb: 'My Profile', title: 'My Profile' },
       },
     ],
