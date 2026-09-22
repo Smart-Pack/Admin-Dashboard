@@ -6,6 +6,7 @@
 import { auth, twoFactor } from '@/api'
 import type { LoginRequest } from '@/api/modules/auth'
 import type { TwoFactorVerifyRequest } from '@/api/modules/twoFactor'
+import type { User } from '@/api/modules/users'
 import { getMe } from '@/api/modules/users'
 import type { AuthState } from './state'
 import { ALLOWED_ACCOUNT_TYPES } from './constants'
@@ -17,6 +18,7 @@ export interface AuthActions {
   initializeAuth(): Promise<void>
   logIn(payload: LoginRequest): Promise<string>
   refreshToken(skipAuthRedirect?: boolean): Promise<void>
+  setLoggedInUser(user: User): void
   verifyTwoFaToken(payload: TwoFactorVerifyRequest): Promise<string>
 }
 
@@ -158,5 +160,15 @@ export const actions: AuthActions = {
     } catch {
       // No valid session to restore.
     }
+  },
+  /**
+   * Updates the authenticated user's details in the authentication store.
+   *
+   * Replaces the currently stored user with the provided user data.
+   *
+   * @param user - The authenticated user's details.
+   */
+  setLoggedInUser(this: AuthStoreContext, user: User): void {
+    this.loggedInUser = user
   },
 }
