@@ -122,11 +122,19 @@
   @apply dark:bg-primary-dark dark:hover:bg-primary-darkHover dark:focus-visible:ring-primary-dark dark:focus-visible:ring-offset-card-dark;
 }
 @utility form-submit {
-  @apply form-submit-light form-submit-dark rounded-xl font-poppins font-medium text-white transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  @apply bg-primary hover:bg-primary-hover
+    dark:bg-primary-dark dark:hover:bg-primary-darkHover
+    rounded-xl font-poppins font-medium text-white transition duration-200
+    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
+    disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 @utility error-btn {
   @apply form-submit bg-error dark:bg-error hover:bg-error-hover dark:hover:bg-error-hover;
+}
+
+@utility primary-bg {
+  @apply bg-primary dark:bg-primary-dark text-white font-poppins;
 }
 
 html,
@@ -140,9 +148,6 @@ body,
 }
 
 @layer components {
-  .primary-bg {
-    @apply bg-primary dark:bg-primary-dark text-white font-poppins;
-  }
   .auth-link {
     @apply primary-text font-medium text-sm;
   }
