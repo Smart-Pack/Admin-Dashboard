@@ -37,7 +37,7 @@ describe('UserCreationForm', () => {
 
       expect(layout.props('pageHeading')).toBe('Add User')
       expect(layout.props('pageDescription')).toBe(
-        'Register a new user so they can access the platform.'
+        'Register a new user so they can access the platform.',
       )
       expect(layout.props('name')).toBe('User')
     })

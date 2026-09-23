@@ -2,9 +2,9 @@ import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 
 import UsersTable from '@/components/Users/Table.vue'
-import TablePageLayout from '@/components/Base/TablePageLayout.vue'
+import TablePageLayout, { type Getter } from '@/components/Base/TablePageLayout.vue'
 
-const mockUsersList = vi.fn()
+const mockUsersList = vi.fn<Getter>()
 
 const mountTable = () =>
   mount(UsersTable, {

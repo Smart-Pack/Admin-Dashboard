@@ -1,4 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router'
+import { RouterView } from 'vue-router'
+import { h, type VNode } from 'vue'
 
 /**
  * @module router/routes
@@ -6,6 +8,18 @@ import type { RouteRecordRaw } from 'vue-router'
  * nested feature routes for analytics, gateways, vouchers, sessions, content, users, SMEs, and the catch-all redirect.
  */
 
+/**
+ * Dummy wrapper component for nested routes.
+ * This lets us declare groups of child routes under a single parent without introducing additional layout markup.
+ *
+ * @returns {VNode}
+ */
+const RouterViewWrapper = {
+  name: 'RouterViewWrapper',
+  render(): VNode {
+    return h(RouterView)
+  },
+}
 /**
  * Application routes.
  *
@@ -90,6 +104,26 @@ const routes: RouteRecordRaw[] = [
         name: 'my-profile',
         component: () => import('@/views/Users/profile.vue'),
         meta: { breadcrumb: 'My Profile', title: 'My Profile' },
+      },
+      // Users section
+      {
+        path: 'users',
+        component: RouterViewWrapper,
+        meta: { breadcrumb: 'Users' },
+        children: [
+          {
+            path: '',
+            name: 'users',
+            component: () => import('@/views/Users/index.vue'),
+            meta: { title: 'User Management', breadcrumb: 'Users' },
+          },
+          {
+            path: ':id/details',
+            name: 'user-details',
+            component: () => import('@/views/Users/index.vue'),
+            meta: { title: 'User Details', breadcrumb: 'Details' },
+          },
+        ],
       },
     ],
   },
