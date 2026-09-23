@@ -173,7 +173,10 @@ export const setPassword = (payload: UpdatePasswordPayload): Promise<string> => 
  * @returns A promise resolving with the created user and a success message.
  */
 export const add = async (payload: CreateUserPayload): Promise<{ data: User; message: string }> => {
-  const response = await apiClient.post<User>(USERS.COLLECTION, payload)
+  const response = await apiClient.post<User>(USERS.COLLECTION, {
+    ...payload,
+    phone: payload.phone.replace(/\s+/g, ''),
+  })
 
   return {
     data: response.data,
