@@ -7,6 +7,7 @@ import './assets/css/main.css'
 import App from './App.vue'
 import api from './api'
 import { notifySuccess, notifyError, deleteModal } from './helpers/swalNotifier'
+import Filters from './helpers/filters'
 import { setupValidation } from './helpers/validation'
 import router from './router'
 import VueTelInput from 'vue-tel-input'
@@ -25,6 +26,10 @@ setupValidation()
  * so components can access it through `this.$api.*`.
  */
 app.config.globalProperties.$api = api
+/**
+ * Registers the global formatter helpers so any component can call `this.$filters.xxx`.
+ */
+app.config.globalProperties.$filters = Filters
 /**
  * Registers a global helper for showing themed success notifications.
  * @param {string} message - The message to display in the notification.

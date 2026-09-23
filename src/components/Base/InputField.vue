@@ -107,7 +107,7 @@ import { ref, computed, watch, markRaw } from 'vue'
  * It integrates with VeeValidate for robust validation and supports leading/trailing icons, different variants (input/select),
  * and automatic attribute passthrough for native HTML5 compliance.
  */
-type SelectOption = {
+export type SelectOption = {
   value: string | number | boolean
   label: string
 }
