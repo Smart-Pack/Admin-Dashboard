@@ -287,8 +287,8 @@ export default {
 
     const userOptions = ref([
       { label: 'Select User Type', value: '' },
-      { label: 'Admin', value: 'Admin' },
-      { label: 'Staff', value: 'Staff' },
+      { label: 'Admin', value: 'admin' },
+      { label: 'Staff', value: 'staff' },
     ])
 
     const countryOptions = computed(() => {
