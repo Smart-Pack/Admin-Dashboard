@@ -1,6 +1,7 @@
 import apiClient from '@/api/client'
 import { USERS } from '../endpoints'
 import type { AxiosError } from 'axios'
+import type { PaginatedResponse, PaginationQueryParams } from '@/api/types'
 
 export type CreateUserPayload = {
   first_name: string
@@ -50,6 +51,30 @@ export type EditMePayload = {
   profile_pic?: File
   date_of_birth: string
   gender: 'male' | 'female' | 'other'
+}
+
+export interface UserListItem {
+  id: number
+  unique_id: string
+  first_name: string
+  last_name: string
+  full_name: string
+  email: string
+  phone: string
+  profile_pic: string | null
+  account_type: 'customer' | 'internal'
+  role: 'staff' | 'admin'
+  gender: 'male' | 'female' | 'other'
+  status: string
+  created_at: string
+}
+
+export type UserListResult = PaginatedResponse<UserListItem>
+
+export interface UserQueryParams extends PaginationQueryParams {
+  account_type?: 'customer' | 'internal'
+  is_active?: boolean
+  role?: 'staff' | 'admin'
 }
 
 /**
@@ -154,4 +179,16 @@ export const add = async (payload: CreateUserPayload): Promise<{ data: User; mes
     data: response.data,
     message: `${payload.first_name} ${payload.last_name} Successfully added`,
   }
+}
+
+/**
+ * Fetches a paginated list of users.
+ *
+ * @param {UserQueryParams} [params] - Optional query parameters for filtering and pagination.
+ * @returns {Promise<UserListResult>} A promise that resolves with the paginated user list.
+ */
+export const list = async (params?: UserQueryParams): Promise<UserListResult> => {
+  const url = USERS.collectionWithQuery(params)
+  const response = await apiClient.get<UserListResult>(url)
+  return response.data
 }

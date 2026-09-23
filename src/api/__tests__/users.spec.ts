@@ -3,7 +3,16 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import apiClient from '@/api/client'
 import { USERS } from '@/api/endpoints'
-import { add, editMe, getMe, initialPassword, setPassword, type User } from '@/api/modules/users'
+import {
+  add,
+  editMe,
+  getMe,
+  initialPassword,
+  list,
+  setPassword,
+  type User,
+  type UserListResult,
+} from '@/api/modules/users'
 
 vi.mock('@/api/client', () => ({
   default: {
@@ -363,6 +372,50 @@ describe('Users API', () => {
         data: createdUser,
         message: 'John Doe Successfully added',
       })
+    })
+  })
+  describe('list', () => {
+    it('fetches a paginated list of users', async () => {
+      const params = {
+        account_type: 'internal' as const,
+        is_active: true,
+        role: 'staff' as const,
+        page: 1,
+        page_size: 20,
+      }
+
+      const responseData: UserListResult = {
+        count: 1,
+        next: null,
+        previous: null,
+        results: [
+          {
+            id: 1,
+            unique_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+            first_name: 'Jane',
+            last_name: 'Doe',
+            full_name: 'Jane Doe',
+            email: 'jane@example.com',
+            phone: '+254712345678',
+            profile_pic: null,
+            account_type: 'internal',
+            role: 'staff',
+            gender: 'female',
+            status: 'active',
+            created_at: '2026-09-23T12:01:29.621Z',
+          },
+        ],
+      }
+
+      vi.mocked(apiClient.get).mockResolvedValueOnce({
+        data: responseData,
+      } as never)
+
+      const response = await list(params)
+
+      expect(apiClient.get).toHaveBeenCalledTimes(1)
+      expect(apiClient.get).toHaveBeenCalledWith(USERS.collectionWithQuery(params))
+      expect(response).toEqual(responseData)
     })
   })
 })

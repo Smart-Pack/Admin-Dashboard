@@ -7,3 +7,15 @@ export interface Api {
   twoFactor: typeof import('@/api/modules/twoFactor')
   users: typeof import('@/api/modules/users')
 }
+
+export interface PaginatedResponse<T> {
+  count: number
+  next: string | null
+  previous: string | null
+  results: T[]
+}
+
+export interface PaginationQueryParams {
+  page?: number
+  page_size?: number
+}
