@@ -119,6 +119,7 @@ import SortDownIcon from '@/components/Icons/SortDownIcon.vue'
 import SearchIcon from '@/components/Icons/SearchIcon.vue'
 import ClearIcon from '@/components/Icons/ClearIcon.vue'
 import InputField from '@/components/Base/InputField.vue'
+import type { TableItem } from './types'
 
 /**
  * Defines the configuration for a table column.
@@ -140,19 +141,6 @@ interface TableHeading {
     /** Initial sort direction. */
     direction?: 'asc' | 'desc'
   }
-}
-
-/**
- * Represents a single table row.
- *
- * The table supports arbitrary row structures because columns may use
- * dot notation to access nested properties.
- *
- * @interface TableItem
- */
-interface TableItem {
-  id: string | number
-  [key: string]: unknown
 }
 
 /**

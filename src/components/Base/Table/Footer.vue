@@ -39,20 +39,20 @@
           <!-- Choose Next/ Current Page -->
           <div class="flex gap-4">
             <button
-              :disabled="pagination.page === 1"
+              :disabled="paginationParams.page === 1"
               type="button"
               class="flex items-center px-2 py-1 form-submit disabled:opacity-40 disabled:cursor-not-allowed text-sm"
-              @click="handlePageChange({ page: pagination.page - 1 })"
+              @click="handlePageChange({ page: paginationParams.page - 1 })"
             >
               <LeftIcon class="mr-1 w-4 h-4 text-white stroke-[3]" />
               <span> Previous</span>
             </button>
 
             <button
-              :disabled="pagination.page >= totalPages"
+              :disabled="paginationParams.page >= totalPages"
               type="button"
               class="flex items-center px-2 py-1 form-submit disabled:opacity-40 disabled:cursor-not-allowed text-sm"
-              @click="handlePageChange({ page: pagination.page + 1 })"
+              @click="handlePageChange({ page: paginationParams.page + 1 })"
             >
               <span> Next </span>
               <RightIcon class="ml-1 w-4 h-4 text-white stroke-[3]" />
@@ -70,26 +70,7 @@ import { defineComponent, type PropType } from 'vue'
 import LeftIcon from '@/components/Icons/LeftIcon.vue'
 import RightIcon from '@/components/Icons/RightIcon.vue'
 import InputField from '@/components/Base/InputField.vue'
-
-/**
- * Pagination parameters used by the table footer.
- */
-interface Pagination {
-  /** The current page number. */
-  page: number
-  /** The number of items displayed per page. */
-  page_size: number
-}
-
-/**
- * Pagination update payload emitted to the parent table.
- */
-interface PaginationChange {
-  /** The page number to navigate to. */
-  page?: number
-  /** The number of items to display per page. */
-  page_size?: number
-}
+import type { Pagination, PaginationChange, PaginationParams } from './types'
 
 /**
  * Option used by the rows-per-page and page selectors.
@@ -127,7 +108,7 @@ export default defineComponent({
      * @default ''
      */
     pagination: {
-      type: Object as PropType<Pagination>,
+      type: [Object, String] as PropType<Pagination>,
       required: true,
     },
 
@@ -177,6 +158,9 @@ export default defineComponent({
   },
 
   computed: {
+    paginationParams(): PaginationParams {
+      return this.pagination as PaginationParams
+    },
     /**
      * Calculates the total number of pages based on the total number of items
      * and the selected page size.

@@ -147,117 +147,14 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
-import type { Component } from 'vue'
 
 import DropdownIcon from '@/components/Icons/DropdownIcon.vue'
 import { safeExternalHref } from '@/utils/urlSecurity'
-
-/**
- * Represents a generic table item.
- */
-type TableItem = Record<string, unknown> & {
-  id: string | number
-  _id?: string | number
-}
-
-/**
- * Represents a table formatter function.
- */
-type FormatterFunction = (rawValue: unknown, item: TableItem, ...args: unknown[]) => unknown
-
-interface BaseAction {
-  name: string
-  type?: 'popup'
-  condition?: ActionCondition
-}
-
-/**
- * Represents a table formatter configuration.
- */
-interface FormatterObject {
-  func: FormatterFunction
-  args?: unknown[]
-}
-
-/**
- * Represents a table cell button configuration.
- */
-interface ButtonConfig {
-  class?: string
-  fn: (item: TableItem) => Promise<unknown> | unknown
-}
-
-/**
- * Represents a table cell click configuration.
- */
-interface ClickConfig {
-  getLink?: (item: TableItem) => string | null | undefined
-}
-
-/**
- * Represents a condition used to determine whether an action is visible.
- */
-interface ActionCondition {
-  key: string
-  match: unknown
-}
-
-/**
- * Represents a table action that navigates to a route.
- */
-interface RouteAction extends BaseAction {
-  route: string
-}
-
-/**
- * Represents a table action that opens a popup.
- */
-interface PopupAction extends BaseAction {
-  type: 'popup'
-}
-
-/**
- * Represents a table action that executes a function.
- */
-interface FunctionAction extends BaseAction {
-  fn: (item: TableItem) => Promise<boolean> | boolean
-}
-
-/**
- * Represents an action configuration.
- */
-type TableAction = RouteAction | PopupAction | FunctionAction
-
-/**
- * Represents a table field's data class configuration.
- */
-interface DataClassConfig {
-  fmt: 'statusClass' | ((rawValue: unknown, item: TableItem) => string)
-  match?: unknown
-}
-
-/**
- * Represents a table heading/field definition.
- */
-interface TableField {
-  key: string
-  label?: string
-  sortable?: boolean
-  defaultSort?: {
-    direction: 'asc' | 'desc'
-  }
-  dataClass?: string | DataClassConfig
-  formatter?: FormatterFunction | FormatterObject
-  action?: TableAction | TableAction[]
-  click?: ClickConfig
-  button?: ButtonConfig
-  component?: Component
-}
+import type { TableItem, TableField, Pagination, ActionCondition, TableAction } from './types'
 
 /**
  * Represents pagination parameters.
  */
-type Pagination = Record<string, unknown> | string
 
 /**
  * @memberof module:components/Base/Table
