@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import apiClient from '@/api/client'
 import { USERS } from '@/api/endpoints'
-import { editMe, getMe, initialPassword, setPassword, type User } from '@/api/modules/users'
+import { add, editMe, getMe, initialPassword, setPassword, type User } from '@/api/modules/users'
 
 vi.mock('@/api/client', () => ({
   default: {
@@ -274,6 +274,95 @@ describe('Users API', () => {
 
       expect(apiClient.post).toHaveBeenCalledWith(USERS.SET_PASSWORD, payload)
       expect(response).toBe('Password Changed successfully.')
+    })
+  })
+  describe('add', () => {
+    it('creates a new user successfully', async () => {
+      const payload = {
+        first_name: 'Jane',
+        last_name: 'Doe',
+        email: 'jane@example.com',
+        phone: '+254712345678',
+        role: 'staff' as const,
+        gender: 'female' as const,
+        date_of_birth: '2000-01-01',
+      }
+
+      const createdUser: User = {
+        id: 2,
+        first_name: 'Jane',
+        last_name: 'Doe',
+        full_name: 'Jane Doe',
+        email: 'jane@example.com',
+        phone: '+254712345678',
+        profile_pic: null,
+        account_type: 'internal',
+        role: 'staff',
+        date_of_birth: '2000-01-01',
+        gender: 'female',
+        changed_password_after_initial_login: false,
+        created_at: '2026-09-23T12:33:13.497Z',
+        updated_at: '2026-09-23T12:33:13.497Z',
+        two_factor_enabled: false,
+        status: 'active',
+      }
+
+      vi.mocked(apiClient.post).mockResolvedValueOnce({
+        data: createdUser,
+      } as never)
+
+      const response = await add(payload)
+
+      expect(apiClient.post).toHaveBeenCalledTimes(1)
+      expect(apiClient.post).toHaveBeenCalledWith(USERS.COLLECTION, payload)
+
+      expect(response).toEqual({
+        data: createdUser,
+        message: 'Jane Doe Successfully added',
+      })
+    })
+
+    it('creates a user without an optional date of birth', async () => {
+      const payload = {
+        first_name: 'John',
+        last_name: 'Doe',
+        email: 'john@example.com',
+        phone: '+254712345678',
+        role: 'staff' as const,
+        gender: 'male' as const,
+      }
+
+      const createdUser: User = {
+        id: 3,
+        first_name: 'John',
+        last_name: 'Doe',
+        full_name: 'John Doe',
+        email: 'john@example.com',
+        phone: '+254712345678',
+        profile_pic: null,
+        account_type: 'internal',
+        role: 'staff',
+        date_of_birth: null,
+        gender: 'male',
+        changed_password_after_initial_login: false,
+        created_at: '2026-09-23T12:33:13.497Z',
+        updated_at: '2026-09-23T12:33:13.497Z',
+        two_factor_enabled: false,
+        status: 'active',
+      }
+
+      vi.mocked(apiClient.post).mockResolvedValueOnce({
+        data: createdUser,
+      } as never)
+
+      const response = await add(payload)
+
+      expect(apiClient.post).toHaveBeenCalledWith(USERS.COLLECTION, payload)
+
+      expect(response).toEqual({
+        data: createdUser,
+        message: 'John Doe Successfully added',
+      })
     })
   })
 })

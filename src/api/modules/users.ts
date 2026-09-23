@@ -2,6 +2,17 @@ import apiClient from '@/api/client'
 import { USERS } from '../endpoints'
 import type { AxiosError } from 'axios'
 
+export type CreateUserPayload = {
+  first_name: string
+  last_name: string
+  email: string
+  phone: string
+  profile_pic?: string
+  role: 'staff' | 'admin'
+  date_of_birth?: string
+  gender: 'male' | 'female' | 'other'
+}
+
 type UpdatePasswordPayload = {
   current_password: string
   new_password: string
@@ -120,4 +131,27 @@ export const editMe = async (payload: EditMePayload): Promise<User> => {
  */
 export const setPassword = (payload: UpdatePasswordPayload): Promise<string> => {
   return apiClient.post(USERS.SET_PASSWORD, payload).then(() => 'Password Changed successfully.')
+}
+
+/**
+ * Creates a new user.
+ *
+ * @param payload - The user data to create.
+ * @param payload.first_name - The user's first name.
+ * @param payload.last_name - The user's last name.
+ * @param payload.email - The user's email address.
+ * @param payload.phone - The user's phone number.
+ * @param payload.profile_pic - Optional profile picture URL.
+ * @param payload.role - The user's internal role.
+ * @param payload.date_of_birth - Optional date of birth.
+ * @param payload.gender - The user's gender.
+ * @returns A promise resolving with the created user and a success message.
+ */
+export const add = async (payload: CreateUserPayload): Promise<{ data: User; message: string }> => {
+  const response = await apiClient.post<User>(USERS.COLLECTION, payload)
+
+  return {
+    data: response.data,
+    message: `${payload.first_name} ${payload.last_name} Successfully added`,
+  }
 }
