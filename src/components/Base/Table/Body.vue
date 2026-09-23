@@ -150,7 +150,14 @@ import { defineComponent, type PropType } from 'vue'
 
 import DropdownIcon from '@/components/Icons/DropdownIcon.vue'
 import { safeExternalHref } from '@/utils/urlSecurity'
-import type { TableItem, TableField, Pagination, ActionCondition, TableAction } from './types'
+import type {
+  TableItem,
+  TableField,
+  Pagination,
+  PaginationChange,
+  ActionCondition,
+  TableAction,
+} from './types'
 
 /**
  * Represents pagination parameters.
@@ -326,8 +333,7 @@ export default defineComponent({
      * Emitted when a pagination-related action requires the parent
      * table to refresh its data.
      */
-    'pagination-change': (value: Pagination) =>
-      typeof value === 'string' || typeof value === 'object',
+    'pagination-change': (value: PaginationChange) => typeof value === 'object' && value !== null,
   },
 
   methods: {
@@ -494,7 +500,10 @@ export default defineComponent({
         })
       } else if ('fn' in action && action.fn !== undefined) {
         if (await action.fn(item)) {
-          this.$emit('pagination-change', this.pagination)
+          const change: PaginationChange =
+            typeof this.pagination === 'object' ? { page: this.pagination.page } : {}
+
+          this.$emit('pagination-change', change)
         }
       }
     },
