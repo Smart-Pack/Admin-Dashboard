@@ -8,8 +8,8 @@ The `src/components/Base` directory contains reusable UI and form components.
 
 | Component                    | Description                            |
 | ---------------------------- | -------------------------------------- |
-| [AuthCard](base/AuthCard.md) | Reusable authentication form card.     |
-| [Button](base/Button.md)     | Reusable application button component. |
+| [AuthCard](AuthCard.md) | Reusable authentication form card.     |
+| [Table](Table.md) | Reusable and configurable table component for displaying collections of data. |
 
 ## Adding Components
 
