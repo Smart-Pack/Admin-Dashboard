@@ -57,7 +57,7 @@ interface TabItem {
   id: string
   caption?: string
   label: string
-  params?: Record<string, unknown>
+  params?: object
 }
 
 /**
@@ -250,7 +250,7 @@ export default defineComponent({
      * Parameters associated with the active tab (used for API queries).
      * @returns {Object}
      */
-    activeParams(): Record<string, unknown> {
+    activeParams(): object {
       const tab = this.tabs[this.activeTab]
       return tab?.params || {}
     },
