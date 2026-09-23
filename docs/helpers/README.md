@@ -4,10 +4,11 @@ The `src/helpers` directory contains reusable application utilities that support
 
 ## Available Helpers
 
-| Helper                      | Description                                                      |
-| --------------------------- | ---------------------------------------------------------------- |
+| Helper | Description |
+| --- | --- |
 | [Validation](validation.md) | Centralized form validation rules and VeeValidate configuration. |
 | [SweetAlert2 Notifications](swalNotifier.md) | Centralized success, error, and confirmation notifications. |
+| Filters | Global formatting helpers for use in Vue components. |
 
 ## Adding Helpers
 
