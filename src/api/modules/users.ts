@@ -1,7 +1,7 @@
 import apiClient from '@/api/client'
 import { USERS } from '../endpoints'
 import type { AxiosError } from 'axios'
-import type { PaginatedResponse, PaginationQueryParams } from '@/api/types'
+import type { PaginatedResponse, PaginationQueryParams, ItemNotFoundError } from '@/api/types'
 
 export type CreateUserPayload = {
   first_name: string
@@ -44,14 +44,22 @@ export interface User {
   status: string
 }
 
-export type EditMePayload = {
+export type EditUserPayloadBase = {
   first_name: string
   last_name: string
   email: string
   phone: string
-  profile_pic?: File
   date_of_birth: string
   gender: 'male' | 'female' | 'other'
+}
+
+export type EditMePayload = EditUserPayloadBase & {
+  profile_pic?: File
+}
+
+export type EditUserPayload = EditUserPayloadBase & {
+  role: 'staff' | 'admin'
+  is_active: boolean
 }
 
 export interface UserListItem {
@@ -195,4 +203,86 @@ export const list = async (params?: UserQueryParams): Promise<UserListResult> =>
   const url = USERS.collectionWithQuery(params)
   const response = await apiClient.get<UserListResult>(url)
   return response.data
+}
+
+/**
+ * Fetches a single user by their ID.
+ *
+ * @param id - The ID of the user to fetch.
+ * @returns A promise resolving with the requested user.
+ * @throws The error is re-thrown after annotating a 404 response.
+ */
+export const getById = async ({ id }: { id: string | number }): Promise<User> => {
+  try {
+    const response = await apiClient.get<User>(USERS.detail(id))
+    return response.data
+  } catch (error) {
+    const axiosError = error as ItemNotFoundError
+
+    if (axiosError.response?.status === 404) {
+      axiosError.message = `User with ID ${id} not found. It may have been deleted.`
+      axiosError.reload = true
+    }
+
+    throw axiosError
+  }
+}
+
+/**
+ * Updates an existing user.
+ *
+ * @param user - The user data to update.
+ * @param user.id - The ID of the user.
+ * @param user.first_name
+ * @param user.last_name
+ * @param user.email
+ * @param user.phone
+ * @param user.role
+ * @param user.date_of_birth
+ * @param user.gender
+ * @param user.is_active
+ * @param toggle - When true, toggles the user's active status instead of a regular update.
+ * @returns A promise resolving with the updated user and success message.
+ * @throws The error is re-thrown after annotating a 404 response.
+ */
+export const edit = async (
+  user: User & { is_active: boolean },
+  toggle = false,
+): Promise<{ data: User; message: string }> => {
+  const { id, ...userData } = user
+
+  let action = 'updated'
+  const payload: EditUserPayload = {
+    first_name: userData.first_name,
+    last_name: userData.last_name,
+    email: userData.email,
+    phone: userData.phone,
+    role: userData.role,
+    date_of_birth: userData.date_of_birth ?? '',
+    gender: userData.gender,
+    is_active: userData.is_active,
+  }
+
+  if (toggle) {
+    payload.is_active = !user.is_active
+    action = user.is_active ? 'suspended' : 'activated'
+  }
+
+  try {
+    const response = await apiClient.patch<User>(USERS.detail(id), payload)
+
+    return {
+      data: response.data,
+      message: `${user.first_name} ${user.last_name} Successfully ${action}`,
+    }
+  } catch (error) {
+    const axiosError = error as ItemNotFoundError
+
+    if (axiosError.response?.status === 404) {
+      axiosError.message = `${user.first_name} ${user.last_name} not found. They may have been deleted.`
+      axiosError.reload = true
+    }
+
+    throw axiosError
+  }
 }

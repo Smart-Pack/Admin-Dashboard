@@ -1,3 +1,5 @@
+import type { AxiosError } from 'axios'
+
 export interface ApiDetailResponse {
   detail: string
 }
@@ -18,4 +20,8 @@ export interface PaginatedResponse<T> {
 export interface PaginationQueryParams {
   page?: number
   page_size?: number
+}
+
+export type ItemNotFoundError = AxiosError & {
+  reload?: boolean
 }

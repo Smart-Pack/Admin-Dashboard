@@ -31,4 +31,5 @@ export const USERS = {
 
     return `${USERS.COLLECTION}?${query.toString()}`
   },
+  detail: (id: string | number): string => `v1/users/${id}/`,
 } as const

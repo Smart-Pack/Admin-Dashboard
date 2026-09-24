@@ -7,7 +7,9 @@ import { USERS } from '@/api/endpoints'
 import {
   add,
   editMe,
+  edit,
   getMe,
+  getById,
   initialPassword,
   list,
   setPassword,
@@ -359,6 +361,155 @@ describe('Users API', () => {
       expect(apiClient.get).toHaveBeenCalledTimes(1)
       expect(apiClient.get).toHaveBeenCalledWith(USERS.collectionWithQuery(params))
       expect(response).toEqual(responseData)
+    })
+  })
+  describe('getById', () => {
+    it('fetches a single user by ID', async () => {
+      const id = 1
+
+      vi.mocked(apiClient.get).mockResolvedValueOnce({
+        data: mockUser,
+      })
+
+      const result = await getById({ id })
+
+      expect(apiClient.get).toHaveBeenCalledExactlyOnceWith(USERS.detail(id))
+      expect(result).toEqual(mockUser)
+    })
+
+    it('throws an error when the user is not found', async () => {
+      const id = 999
+      const error = {
+        response: {
+          status: 404,
+        },
+      } as AxiosError
+
+      vi.mocked(apiClient.get).mockRejectedValueOnce(error)
+
+      await expect(getById({ id })).rejects.toEqual(
+        expect.objectContaining({
+          message: `User with ID ${id} not found. It may have been deleted.`,
+          reload: true,
+        }),
+      )
+    })
+
+    it('rethrows errors other than 404', async () => {
+      const error = new Error('Internal server error')
+
+      vi.mocked(apiClient.get).mockRejectedValueOnce(error)
+
+      await expect(getById({ id: 1 })).rejects.toThrow('Internal server error')
+    })
+  })
+  describe('edit', () => {
+    it('updates an existing user', async () => {
+      const user = {
+        ...mockUser,
+        is_active: true,
+      }
+
+      const payload = {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        date_of_birth: user.date_of_birth ?? '',
+        gender: user.gender,
+        is_active: user.is_active,
+      }
+
+      vi.mocked(apiClient.patch).mockResolvedValueOnce({
+        data: mockUser,
+      })
+
+      const result = await edit(user)
+
+      expect(apiClient.patch).toHaveBeenCalledExactlyOnceWith(USERS.detail(user.id), payload)
+
+      expect(result).toEqual({
+        data: mockUser,
+        message: 'John Doe Successfully updated',
+      })
+    })
+
+    it('suspends an active user when toggled', async () => {
+      const user = {
+        ...mockUser,
+        is_active: true,
+      }
+
+      vi.mocked(apiClient.patch).mockResolvedValueOnce({
+        data: mockUser,
+      })
+
+      const result = await edit(user, true)
+
+      expect(apiClient.patch).toHaveBeenCalledExactlyOnceWith(
+        USERS.detail(user.id),
+        expect.objectContaining({
+          is_active: false,
+        }),
+      )
+
+      expect(result.message).toBe('John Doe Successfully suspended')
+    })
+
+    it('activates an inactive user when toggled', async () => {
+      const user = {
+        ...mockUser,
+        is_active: false,
+      }
+
+      vi.mocked(apiClient.patch).mockResolvedValueOnce({
+        data: mockUser,
+      })
+
+      const result = await edit(user, true)
+
+      expect(apiClient.patch).toHaveBeenCalledExactlyOnceWith(
+        USERS.detail(user.id),
+        expect.objectContaining({
+          is_active: true,
+        }),
+      )
+
+      expect(result.message).toBe('John Doe Successfully activated')
+    })
+
+    it('throws an error when the user is not found', async () => {
+      const user = {
+        ...mockUser,
+        is_active: true,
+      }
+
+      const error = {
+        response: { status: 404 },
+      } as AxiosError
+
+      vi.mocked(apiClient.patch).mockRejectedValueOnce(error)
+
+      await expect(edit(user)).rejects.toEqual(
+        expect.objectContaining({
+          message: 'John Doe not found. They may have been deleted.',
+          reload: true,
+        }),
+      )
+    })
+
+    it('rethrows errors other than 404', async () => {
+      const user = {
+        ...mockUser,
+        is_active: true,
+      }
+
+      const error = new Error('Internal server error')
+
+      vi.mocked(apiClient.patch).mockRejectedValueOnce(error)
+
+      await expect(edit(user)).rejects.toThrow('Internal server error')
     })
   })
 })
