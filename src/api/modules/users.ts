@@ -42,6 +42,7 @@ export interface User {
   updated_at: string
   two_factor_enabled: boolean
   status: string
+  is_active: boolean
 }
 
 export type EditUserPayloadBase = {
@@ -246,7 +247,7 @@ export const getById = async ({ id }: { id: string | number }): Promise<User> =>
  * @throws The error is re-thrown after annotating a 404 response.
  */
 export const edit = async (
-  user: User & { is_active: boolean },
+  user: User,
   toggle = false,
 ): Promise<{ data: User; message: string }> => {
   const { id, ...userData } = user
@@ -256,7 +257,7 @@ export const edit = async (
     first_name: userData.first_name,
     last_name: userData.last_name,
     email: userData.email,
-    phone: userData.phone,
+    phone: userData.phone.replace(/\s+/g, ''),
     role: userData.role,
     date_of_birth: userData.date_of_birth ?? '',
     gender: userData.gender,

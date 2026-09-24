@@ -120,8 +120,8 @@ const routes: RouteRecordRaw[] = [
           {
             path: ':id/details',
             name: 'user-details',
-            component: () => import('@/views/Users/index.vue'),
-            meta: { title: 'User Details', breadcrumb: 'Details' },
+            component: () => import('@/views/Users/details.vue'),
+            meta: { title: 'User Details', breadcrumb: 'User Details' },
           },
         ],
       },

@@ -18,4 +18,5 @@ export const mockUser: User = {
   updated_at: '2026-09-15T12:33:13.497Z',
   two_factor_enabled: true,
   status: 'active',
+  is_active: true,
 }

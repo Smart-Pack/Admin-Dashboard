@@ -40,4 +40,16 @@ export default {
       timeStyle: 'short',
     }).format(date)
   },
+  /**
+   * Formats an ISO date string into a localized, human-readable date only (no time).
+   * @param value - The ISO date or date-time string to format.
+   * @returns The formatted date string, or an empty string if the input is falsy.
+   */
+  dateOnly(value: string | null | undefined): string {
+    if (!value) return ''
+
+    return new Intl.DateTimeFormat('en-US', {
+      dateStyle: 'medium',
+    }).format(new Date(value))
+  },
 }
