@@ -127,7 +127,7 @@ interface ModalButtonConfig {
  * Represents the reactive form model. Field values are seeded from `initialValues`
  * or defaulted to an empty string for every field declared across `sections`.
  */
-type FormItem = Record<string, string | number | boolean | File | null | undefined>
+export type FormItem = Record<string, string | number | boolean | File | null | undefined>
 
 /**
  * Represents the payload the `adder` function resolves with on success.
