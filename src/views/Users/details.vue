@@ -93,7 +93,12 @@
             type="button"
             class="px-4 py-2 rounded-full text-sm font-semibold error-btn"
             @click="toggleUser"
-            :disabled="submitting"
+            :disabled="submitting || authStore.isCurrentUser(user.id)"
+            :title="
+              authStore.isCurrentUser(user.id)
+                ? 'You cannot suspend or activate your own account'
+                : undefined
+            "
           >
             {{ user.status === 'active' ? 'Suspend' : 'Activate' }}
           </button>
@@ -131,7 +136,6 @@ import MaleIcon from '@/components/Icons/MaleIcon.vue'
 import FemaleIcon from '@/components/Icons/FemaleIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import UserUpdateForm from '@/components/Users/UpdateForm.vue'
-import { mapStores } from 'pinia'
 import { useAuthStore } from '@/stores/modules/auth'
 
 export default defineComponent({
@@ -144,7 +148,9 @@ export default defineComponent({
     UserUpdateForm,
   },
   computed: {
-    ...mapStores(useAuthStore),
+    authStore() {
+      return useAuthStore(this.$pinia)
+    },
     headingTitle(): string {
       return `${this.$filters.capitalize(this.user.account_type || '')} ${this.$filters.capitalize(this.user.role || 'User')}`.trim()
     },

@@ -18,6 +18,7 @@ const mockRouterPush = vi.fn<(location: { name: string }) => void>()
 
 const mockAuthStore = {
   isAdmin: true,
+  isCurrentUser: vi.fn<(id: string | number) => boolean>(() => false),
 }
 
 vi.mock('@/stores/modules/auth', () => ({
@@ -40,6 +41,7 @@ const mountView = () =>
             edit: mockEdit,
           },
         },
+        $pinia: {},
         $filters: mockFilters,
         $notifyError: mockNotifyError,
         $notifySuccess: mockNotifySuccess,
@@ -61,6 +63,7 @@ describe('UserDetails', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockAuthStore.isAdmin = true
+    mockAuthStore.isCurrentUser.mockReturnValue(false)
     mockGetById.mockResolvedValue(mockUser)
   })
 
@@ -291,6 +294,42 @@ describe('UserDetails', () => {
 
       await wrapper.find('.form-submit').trigger('click')
       expect(wrapper.findComponent(UserUpdateForm).exists()).toBe(false)
+    })
+  })
+  describe('suspend/activate actions', () => {
+    it('shows Suspend for an active user', async () => {
+      mockAuthStore.isAdmin = true
+      mockAuthStore.isCurrentUser.mockReturnValue(false)
+
+      const wrapper = mountView()
+      await flushPromises()
+
+      expect(wrapper.find('.error-btn').text()).toBe('Suspend')
+    })
+
+    it('shows Activate for a suspended user', async () => {
+      mockAuthStore.isAdmin = true
+      mockAuthStore.isCurrentUser.mockReturnValue(false)
+
+      mockGetById.mockResolvedValue({
+        ...mockUser,
+        status: 'suspended',
+      })
+
+      const wrapper = mountView()
+      await flushPromises()
+
+      expect(wrapper.find('.error-btn').text()).toBe('Activate')
+    })
+
+    it('disables the button for the current user', async () => {
+      mockAuthStore.isAdmin = true
+      mockAuthStore.isCurrentUser.mockReturnValue(true)
+
+      const wrapper = mountView()
+      await flushPromises()
+
+      expect(wrapper.find('.error-btn').attributes('disabled')).toBeDefined()
     })
   })
 })
