@@ -87,7 +87,24 @@ describe('Router Guard', () => {
         },
       ])
     })
+    it('creates the full breadcrumb trail for the user details route', async () => {
+      await router.push('/dashboard/users/123/details')
 
+      expect(uiStore.breadcrumbs).toEqual([
+        {
+          name: 'dashboard',
+          breadcrumb: 'Home',
+        },
+        {
+          name: 'users-parent',
+          breadcrumb: 'Users',
+        },
+        {
+          name: 'user-details',
+          breadcrumb: 'User Details',
+        },
+      ])
+    })
     it('removes duplicate breadcrumbs and keeps the named route', async () => {
       await router.push('/dashboard')
 

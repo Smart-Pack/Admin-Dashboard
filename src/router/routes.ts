@@ -108,6 +108,8 @@ const routes: RouteRecordRaw[] = [
       // Users section
       {
         path: 'users',
+        name: 'users-parent',
+        redirect: { name: 'users' },
         component: RouterViewWrapper,
         meta: { breadcrumb: 'Users' },
         children: [

@@ -109,7 +109,7 @@ const menuItems: MenuItem[] = [
     icon: markRaw(UserIcon),
   },
   {
-    name: 'users',
+    name: 'users-parent',
     label: 'User Management',
     icon: markRaw(UserGroupIcon),
   },
