@@ -2,30 +2,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { auth, twoFactor } from '@/api'
 import { getMe } from '@/api/modules/users'
+import { mockUser } from '@/tests/constants'
 import type { RefreshOptions } from '@/api/modules/auth'
 import type { User } from '@/api/modules/users'
 
 import { actions, type AuthActions } from '../actions'
 import type { AuthState } from '../state'
-
-const mockUser: User = {
-  id: 1,
-  first_name: 'John',
-  last_name: 'Doe',
-  full_name: 'John Doe',
-  email: 'john@example.com',
-  phone: '+254712345678',
-  profile_pic: null,
-  account_type: 'internal',
-  role: 'staff',
-  date_of_birth: '2000-01-01',
-  gender: 'male',
-  changed_password_after_initial_login: true,
-  created_at: '2026-09-15T12:33:13.497Z',
-  updated_at: '2026-09-15T12:33:13.497Z',
-  two_factor_enabled: true,
-  status: 'active',
-}
 
 vi.mock('@/api/modules/users', () => ({
   getMe: vi.fn<() => Promise<User>>(),
@@ -62,24 +44,7 @@ describe('auth store actions', () => {
 
   describe('clearStore', () => {
     it('clears the access token and logged-in user', () => {
-      store.loggedInUser = {
-        id: 1,
-        first_name: 'John',
-        last_name: 'Doe',
-        full_name: 'John Doe',
-        email: 'john@example.com',
-        phone: '+254712345678',
-        profile_pic: null,
-        account_type: 'customer',
-        role: 'staff',
-        date_of_birth: '2000-01-01',
-        gender: 'male',
-        changed_password_after_initial_login: true,
-        created_at: '2026-09-15T12:33:13.497Z',
-        updated_at: '2026-09-15T12:33:13.497Z',
-        two_factor_enabled: true,
-        status: 'active',
-      }
+      store.loggedInUser = mockUser
 
       store.clearStore()
 
@@ -146,32 +111,13 @@ describe('auth store actions', () => {
   })
 
   describe('fetchUser', () => {
-    const user: User = {
-      id: 1,
-      first_name: 'John',
-      last_name: 'Doe',
-      full_name: 'John Doe',
-      email: 'john@example.com',
-      phone: '+254712345678',
-      profile_pic: null,
-      account_type: 'customer',
-      role: 'staff',
-      date_of_birth: '2000-01-01',
-      gender: 'male',
-      changed_password_after_initial_login: true,
-      created_at: '2026-09-15T12:33:13.497Z',
-      updated_at: '2026-09-15T12:33:13.497Z',
-      two_factor_enabled: true,
-      status: 'active',
-    }
-
     it('fetches and stores the currently logged-in user', async () => {
-      vi.mocked(getMe).mockResolvedValue(user)
+      vi.mocked(getMe).mockResolvedValue(mockUser)
 
       await store.fetchUser()
 
       expect(getMe).toHaveBeenCalledExactlyOnceWith()
-      expect(store.loggedInUser).toEqual(user)
+      expect(store.loggedInUser).toEqual(mockUser)
     })
 
     it('clears the store and rethrows when fetching the user fails', async () => {
@@ -187,24 +133,7 @@ describe('auth store actions', () => {
   })
   describe('createTwoFaToken', () => {
     it('requests a 2FA token for an allowed account type', async () => {
-      store.loggedInUser = {
-        id: 1,
-        first_name: 'John',
-        last_name: 'Doe',
-        full_name: 'John Doe',
-        email: 'john@example.com',
-        phone: '+254712345678',
-        profile_pic: null,
-        account_type: 'internal',
-        role: 'staff',
-        date_of_birth: '2000-01-01',
-        gender: 'male',
-        changed_password_after_initial_login: true,
-        created_at: '2026-09-15T12:33:13.497Z',
-        updated_at: '2026-09-15T12:33:13.497Z',
-        two_factor_enabled: true,
-        status: 'active',
-      }
+      store.loggedInUser = { ...mockUser }
 
       vi.mocked(twoFactor.request).mockResolvedValue({
         detail: 'OTP sent successfully.',
@@ -225,22 +154,8 @@ describe('auth store actions', () => {
 
     it('throws when the account type is not allowed', async () => {
       store.loggedInUser = {
-        id: 1,
-        first_name: 'John',
-        last_name: 'Doe',
-        full_name: 'John Doe',
-        email: 'john@example.com',
-        phone: '+254712345678',
-        profile_pic: null,
+        ...mockUser,
         account_type: 'customer',
-        role: 'staff',
-        date_of_birth: '2000-01-01',
-        gender: 'male',
-        changed_password_after_initial_login: true,
-        created_at: '2026-09-15T12:33:13.497Z',
-        updated_at: '2026-09-15T12:33:13.497Z',
-        two_factor_enabled: true,
-        status: 'active',
       }
 
       await expect(store.createTwoFaToken()).rejects.toThrow(
@@ -251,24 +166,7 @@ describe('auth store actions', () => {
     })
 
     it('propagates the 2FA request error', async () => {
-      store.loggedInUser = {
-        id: 1,
-        first_name: 'John',
-        last_name: 'Doe',
-        full_name: 'John Doe',
-        email: 'john@example.com',
-        phone: '+254712345678',
-        profile_pic: null,
-        account_type: 'internal',
-        role: 'staff',
-        date_of_birth: '2000-01-01',
-        gender: 'male',
-        changed_password_after_initial_login: true,
-        created_at: '2026-09-15T12:33:13.497Z',
-        updated_at: '2026-09-15T12:33:13.497Z',
-        two_factor_enabled: true,
-        status: 'active',
-      }
+      store.loggedInUser = { ...mockUser }
 
       const error = new Error('Failed to request 2FA token')
 
@@ -289,24 +187,7 @@ describe('auth store actions', () => {
         refresh: 'refresh-token',
       })
 
-      vi.mocked(getMe).mockResolvedValue({
-        id: 1,
-        first_name: 'John',
-        last_name: 'Doe',
-        full_name: 'John Doe',
-        email: 'john@example.com',
-        phone: '+254712345678',
-        profile_pic: null,
-        account_type: 'internal',
-        role: 'staff',
-        date_of_birth: '2000-01-01',
-        gender: 'male',
-        changed_password_after_initial_login: true,
-        created_at: '2026-09-15T12:33:13.497Z',
-        updated_at: '2026-09-15T12:33:13.497Z',
-        two_factor_enabled: true,
-        status: 'active',
-      })
+      vi.mocked(getMe).mockResolvedValue(mockUser)
 
       vi.mocked(twoFactor.request).mockResolvedValue({
         detail: 'OTP sent successfully.',

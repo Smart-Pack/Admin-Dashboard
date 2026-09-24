@@ -21,4 +21,15 @@ export const USERS = {
   INITIAL_PASSWORD: 'v1/users/initial_password/',
   SET_PASSWORD: 'v1/users/set_password/',
   ME: 'v1/users/me/',
+  COLLECTION: 'v1/users/',
+  collectionWithQuery: (params?: object) => {
+    if (!params) return USERS.COLLECTION
+
+    const query = new URLSearchParams(
+      Object.entries(params).map(([key, value]) => [key, String(value)]),
+    )
+
+    return `${USERS.COLLECTION}?${query.toString()}`
+  },
+  detail: (id: string | number): string => `v1/users/${id}/`,
 } as const

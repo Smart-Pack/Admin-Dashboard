@@ -29,4 +29,15 @@ export const getters = {
 
     return state.accessToken ? isOtpVerified(state.accessToken) : false
   },
+  /**
+   * Indicates whether the logged-in user has the admin role.
+   */
+  isAdmin: (state: AuthState): boolean => state.loggedInUser?.role === 'admin',
+  /**
+   * Indicates whether the given user ID belongs to the logged-in user.
+   */
+  isCurrentUser:
+    (state: AuthState) =>
+    (id: string | number): boolean =>
+      state.loggedInUser?.id === id,
 }

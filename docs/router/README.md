@@ -10,3 +10,4 @@ This directory contains the routing configuration and navigation logic for the S
 ### Dashboard
 
 * [My Profile](dashboard/profile.md) - Allows authenticated users to view and manage their personal and contact information.
+* [User Management](dashboard/users.md) - Allows administrators to view, filter, add, and manage platform users.

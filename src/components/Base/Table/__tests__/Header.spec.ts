@@ -146,7 +146,11 @@ describe('TableHeader', () => {
 
       const sorted = wrapper.vm.sortedItems
 
-      expect(sorted.map((item) => item.name)).toEqual(['Alice', 'Bob', 'Charlie'])
+      expect(sorted.map((item) => (item as unknown as { name: string }).name)).toEqual([
+        'Alice',
+        'Bob',
+        'Charlie',
+      ])
     })
 
     it('toggles the sort direction when the same column is clicked', async () => {
@@ -160,7 +164,9 @@ describe('TableHeader', () => {
 
       expect(wrapper.vm.currentSortDirection).toBe('desc')
 
-      expect(wrapper.vm.sortedItems.map((item) => item.name)).toEqual(['Charlie', 'Bob', 'Alice'])
+      expect(
+        wrapper.vm.sortedItems.map((item) => (item as unknown as { name: string }).name),
+      ).toEqual(['Charlie', 'Bob', 'Alice'])
     })
 
     it('changes the sort column when another sortable heading is clicked', async () => {

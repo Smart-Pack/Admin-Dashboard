@@ -1,9 +1,21 @@
 import type { AxiosError, AxiosInstance } from 'axios'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { mockUser } from '@/tests/constants'
 
 import apiClient from '@/api/client'
 import { USERS } from '@/api/endpoints'
-import { editMe, getMe, initialPassword, setPassword, type User } from '@/api/modules/users'
+import {
+  add,
+  editMe,
+  edit,
+  getMe,
+  getById,
+  initialPassword,
+  list,
+  setPassword,
+  type User,
+  type UserListResult,
+} from '@/api/modules/users'
 
 vi.mock('@/api/client', () => ({
   default: {
@@ -20,24 +32,7 @@ describe('Users API', () => {
 
   describe('getMe', () => {
     it('fetches the currently authenticated user', async () => {
-      const user: User = {
-        id: 1,
-        first_name: 'John',
-        last_name: 'Doe',
-        full_name: 'John Doe',
-        email: 'john@example.com',
-        phone: '+254712345678',
-        profile_pic: null,
-        account_type: 'customer',
-        role: 'staff',
-        date_of_birth: '2000-01-01',
-        gender: 'male',
-        changed_password_after_initial_login: true,
-        created_at: '2026-09-15T12:33:13.497Z',
-        updated_at: '2026-09-15T12:33:13.497Z',
-        two_factor_enabled: true,
-        status: 'active',
-      }
+      const user = mockUser
 
       vi.mocked(apiClient.get).mockResolvedValueOnce({
         data: user,
@@ -62,22 +57,12 @@ describe('Users API', () => {
       }
 
       const updatedUser: User = {
-        id: 1,
+        ...mockUser,
         first_name: 'Jane',
-        last_name: 'Doe',
         full_name: 'Jane Doe',
         email: 'jane@example.com',
-        phone: '+254712345678',
-        profile_pic: null,
-        account_type: 'customer',
-        role: 'staff',
-        date_of_birth: '2000-01-01',
         gender: 'female',
-        changed_password_after_initial_login: true,
-        created_at: '2026-09-15T12:33:13.497Z',
         updated_at: '2026-09-18T12:33:13.497Z',
-        two_factor_enabled: true,
-        status: 'active',
       }
 
       vi.mocked(apiClient.patch).mockResolvedValueOnce({
@@ -118,23 +103,14 @@ describe('Users API', () => {
         profile_pic: profilePic,
       }
 
-      const updatedUser = {
-        id: 1,
+      const updatedUser: User = {
+        ...mockUser,
         first_name: 'Jane',
-        last_name: 'Doe',
         full_name: 'Jane Doe',
         email: 'jane@example.com',
-        phone: '+254712345678',
         profile_pic: 'https://example.com/profile.jpg',
-        account_type: 'customer' as const,
-        role: 'staff' as const,
-        date_of_birth: '2000-01-01',
-        gender: 'female' as const,
-        changed_password_after_initial_login: true,
-        created_at: '2026-09-15T12:33:13.497Z',
+        gender: 'female',
         updated_at: '2026-09-18T12:33:13.497Z',
-        two_factor_enabled: true,
-        status: 'active',
       }
 
       vi.mocked(apiClient.patch).mockResolvedValueOnce({
@@ -274,6 +250,266 @@ describe('Users API', () => {
 
       expect(apiClient.post).toHaveBeenCalledWith(USERS.SET_PASSWORD, payload)
       expect(response).toBe('Password Changed successfully.')
+    })
+  })
+  describe('add', () => {
+    it('creates a new user successfully', async () => {
+      const payload = {
+        first_name: 'Jane',
+        last_name: 'Doe',
+        email: 'jane@example.com',
+        phone: '+254712345678',
+        role: 'staff' as const,
+        gender: 'female' as const,
+        date_of_birth: '2000-01-01',
+      }
+
+      const createdUser: User = {
+        ...mockUser,
+        id: 2,
+        first_name: 'Jane',
+        full_name: 'Jane Doe',
+        email: 'jane@example.com',
+        gender: 'female',
+        changed_password_after_initial_login: false,
+        created_at: '2026-09-23T12:33:13.497Z',
+        updated_at: '2026-09-23T12:33:13.497Z',
+        two_factor_enabled: false,
+      }
+
+      vi.mocked(apiClient.post).mockResolvedValueOnce({
+        data: createdUser,
+      } as never)
+
+      const response = await add(payload)
+
+      expect(apiClient.post).toHaveBeenCalledTimes(1)
+      expect(apiClient.post).toHaveBeenCalledWith(USERS.COLLECTION, payload)
+
+      expect(response).toEqual({
+        data: createdUser,
+        message: 'Jane Doe Successfully added',
+      })
+    })
+
+    it('creates a user without an optional date of birth', async () => {
+      const payload = {
+        first_name: 'John',
+        last_name: 'Doe',
+        email: 'john@example.com',
+        phone: '+254712345678',
+        role: 'staff' as const,
+        gender: 'male' as const,
+      }
+
+      const createdUser: User = {
+        ...mockUser,
+        id: 3,
+        date_of_birth: null,
+        changed_password_after_initial_login: false,
+        created_at: '2026-09-23T12:33:13.497Z',
+        updated_at: '2026-09-23T12:33:13.497Z',
+        two_factor_enabled: false,
+      }
+
+      vi.mocked(apiClient.post).mockResolvedValueOnce({
+        data: createdUser,
+      } as never)
+
+      const response = await add(payload)
+
+      expect(apiClient.post).toHaveBeenCalledWith(USERS.COLLECTION, payload)
+
+      expect(response).toEqual({
+        data: createdUser,
+        message: 'John Doe Successfully added',
+      })
+    })
+  })
+  describe('list', () => {
+    it('fetches a paginated list of users', async () => {
+      const params = {
+        account_type: 'internal' as const,
+        is_active: true,
+        role: 'staff' as const,
+        page: 1,
+        page_size: 20,
+      }
+
+      const responseData: UserListResult = {
+        count: 1,
+        next: null,
+        previous: null,
+        results: [
+          {
+            ...mockUser,
+            first_name: 'Jane',
+            full_name: 'Jane Doe',
+            email: 'jane@example.com',
+            gender: 'female',
+            created_at: '2026-09-23T12:01:29.621Z',
+          },
+        ],
+      }
+
+      vi.mocked(apiClient.get).mockResolvedValueOnce({
+        data: responseData,
+      } as never)
+
+      const response = await list(params)
+
+      expect(apiClient.get).toHaveBeenCalledTimes(1)
+      expect(apiClient.get).toHaveBeenCalledWith(USERS.collectionWithQuery(params))
+      expect(response).toEqual(responseData)
+    })
+  })
+  describe('getById', () => {
+    it('fetches a single user by ID', async () => {
+      const id = 1
+
+      vi.mocked(apiClient.get).mockResolvedValueOnce({
+        data: mockUser,
+      })
+
+      const result = await getById({ id })
+
+      expect(apiClient.get).toHaveBeenCalledExactlyOnceWith(USERS.detail(id))
+      expect(result).toEqual(mockUser)
+    })
+
+    it('throws an error when the user is not found', async () => {
+      const id = 999
+      const error = {
+        response: {
+          status: 404,
+        },
+      } as AxiosError
+
+      vi.mocked(apiClient.get).mockRejectedValueOnce(error)
+
+      await expect(getById({ id })).rejects.toEqual(
+        expect.objectContaining({
+          message: `User with ID ${id} not found. It may have been deleted.`,
+          reload: true,
+        }),
+      )
+    })
+
+    it('rethrows errors other than 404', async () => {
+      const error = new Error('Internal server error')
+
+      vi.mocked(apiClient.get).mockRejectedValueOnce(error)
+
+      await expect(getById({ id: 1 })).rejects.toThrow('Internal server error')
+    })
+  })
+  describe('edit', () => {
+    it('updates an existing user', async () => {
+      const user = {
+        ...mockUser,
+        is_active: true,
+      }
+
+      const payload = {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        date_of_birth: user.date_of_birth ?? '',
+        gender: user.gender,
+        is_active: user.is_active,
+      }
+
+      vi.mocked(apiClient.patch).mockResolvedValueOnce({
+        data: mockUser,
+      })
+
+      const result = await edit(user)
+
+      expect(apiClient.patch).toHaveBeenCalledExactlyOnceWith(USERS.detail(user.id), payload)
+
+      expect(result).toEqual({
+        data: mockUser,
+        message: 'John Doe Successfully updated',
+      })
+    })
+
+    it('suspends an active user when toggled', async () => {
+      const user = {
+        ...mockUser,
+        is_active: true,
+      }
+
+      vi.mocked(apiClient.patch).mockResolvedValueOnce({
+        data: mockUser,
+      })
+
+      const result = await edit(user, true)
+
+      expect(apiClient.patch).toHaveBeenCalledExactlyOnceWith(
+        USERS.detail(user.id),
+        expect.objectContaining({
+          is_active: false,
+        }),
+      )
+
+      expect(result.message).toBe('John Doe Successfully suspended')
+    })
+
+    it('activates an inactive user when toggled', async () => {
+      const user = {
+        ...mockUser,
+        is_active: false,
+      }
+
+      vi.mocked(apiClient.patch).mockResolvedValueOnce({
+        data: mockUser,
+      })
+
+      const result = await edit(user, true)
+
+      expect(apiClient.patch).toHaveBeenCalledExactlyOnceWith(
+        USERS.detail(user.id),
+        expect.objectContaining({
+          is_active: true,
+        }),
+      )
+
+      expect(result.message).toBe('John Doe Successfully activated')
+    })
+
+    it('throws an error when the user is not found', async () => {
+      const user = {
+        ...mockUser,
+        is_active: true,
+      }
+
+      const error = {
+        response: { status: 404 },
+      } as AxiosError
+
+      vi.mocked(apiClient.patch).mockRejectedValueOnce(error)
+
+      await expect(edit(user)).rejects.toEqual(
+        expect.objectContaining({
+          message: 'John Doe not found. They may have been deleted.',
+          reload: true,
+        }),
+      )
+    })
+
+    it('rethrows errors other than 404', async () => {
+      const user = {
+        ...mockUser,
+        is_active: true,
+      }
+
+      const error = new Error('Internal server error')
+
+      vi.mocked(apiClient.patch).mockRejectedValueOnce(error)
+
+      await expect(edit(user)).rejects.toThrow('Internal server error')
     })
   })
 })

@@ -78,6 +78,7 @@ import HomeIcon from '@/components/Icons/HomeIcon.vue'
 import UserIcon from '@/components/Icons/UserIcon.vue'
 import DarkModeIcon from '@/components/Icons/DarkModeIcon.vue'
 import LightModeIcon from '@/components/Icons/LightModeIcon.vue'
+import UserGroupIcon from '@/components/Icons/UserGroupIcon.vue'
 import { useAuthStore, useUiStore } from '@/stores'
 
 defineOptions({
@@ -106,6 +107,11 @@ const menuItems: MenuItem[] = [
     name: 'my-profile',
     label: 'My Profile',
     icon: markRaw(UserIcon),
+  },
+  {
+    name: 'users-parent',
+    label: 'User Management',
+    icon: markRaw(UserGroupIcon),
   },
 ]
 

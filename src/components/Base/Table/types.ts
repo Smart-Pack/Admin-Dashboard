@@ -1,6 +1,6 @@
 export interface TableItem {
   id: string | number
-  [key: string]: unknown
+  _id?: string | number
 }
 
 export interface PaginationParams {

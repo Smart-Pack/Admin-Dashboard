@@ -286,9 +286,9 @@ export default {
     ])
 
     const userOptions = ref([
-      { label: 'Select User Type', value: '' },
-      { label: 'Admin', value: 'Admin' },
-      { label: 'Staff', value: 'Staff' },
+      { label: 'Select User Role', value: '' },
+      { label: 'Admin', value: 'admin' },
+      { label: 'Staff', value: 'staff' },
     ])
 
     const countryOptions = computed(() => {
@@ -317,7 +317,7 @@ export default {
             options: userOptions.value,
             rules: 'required',
             icon: markRaw(UserIcon),
-            errorLabel: 'User Type',
+            errorLabel: 'User Role',
           }
         case 'country':
           return {

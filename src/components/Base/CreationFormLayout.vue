@@ -70,6 +70,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, reactive, ref, watch, type PropType } from 'vue'
+import type { AxiosError } from 'axios'
 import { useForm } from 'vee-validate'
 
 import InputField from '@/components/Base/InputField.vue'
@@ -126,7 +127,7 @@ interface ModalButtonConfig {
  * Represents the reactive form model. Field values are seeded from `initialValues`
  * or defaulted to an empty string for every field declared across `sections`.
  */
-type FormItem = Record<string, string | number | boolean | File | null | undefined>
+export type FormItem = Record<string, string | number | boolean | File | null | undefined>
 
 /**
  * Represents the payload the `adder` function resolves with on success.
@@ -140,15 +141,6 @@ export interface AdderResult {
  * Represents the function responsible for persisting the `item` payload.
  */
 export type Adder = (payload: Record<string, unknown>) => Promise<AdderResult>
-
-/**
- * Represents the shape of errors thrown by `adder`, including optional
- * field-level validation messages keyed by field name.
- */
-interface ApiError {
-  message?: string
-  data?: Record<string, string[]>
-}
 
 /**
  * @module components/Base/CreationFormLayout
@@ -311,10 +303,10 @@ export default defineComponent({
           })
         }
       } catch (e: unknown) {
-        const error = e as ApiError
+        const error = e as AxiosError
 
-        if (error.data) {
-          Object.entries(error.data).forEach(([field, messages]) => {
+        if (error?.response?.data) {
+          Object.entries(error.response.data).forEach(([field, messages]) => {
             setFieldError(field, messages[0])
           })
         }
