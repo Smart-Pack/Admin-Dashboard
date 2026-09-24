@@ -4,6 +4,7 @@
       <h2 class="main-heading text-xl lg:text-2xl">Users</h2>
 
       <button
+        v-if="authStore.isAdmin"
         type="button"
         class="px-4 py-2 rounded-full text-sm font-semibold"
         :class="activePage === 'showUsers' ? 'form-submit' : 'hidden'"
@@ -29,8 +30,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useAuthStore } from '@/stores/modules/auth'
 import UsersTable from '@/components/Users/Table.vue'
 import UserCreationForm from '@/components/Users/CreationForm.vue'
+
 defineOptions({
   name: 'UsersView',
 })
@@ -46,6 +49,8 @@ defineOptions({
  * @type {string}
  */
 const activePage = ref<'showUsers' | 'addUser'>('showUsers')
+
+const authStore = useAuthStore()
 </script>
 
 <style></style>

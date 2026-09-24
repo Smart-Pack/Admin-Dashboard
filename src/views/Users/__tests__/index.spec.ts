@@ -1,9 +1,17 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import UsersView from '@/views/Users/index.vue'
 import UsersTable from '@/components/Users/Table.vue'
 import UserCreationForm from '@/components/Users/CreationForm.vue'
+
+const mockAuthStore = {
+  isAdmin: true,
+}
+
+vi.mock('@/stores/modules/auth', () => ({
+  useAuthStore: () => mockAuthStore,
+}))
 
 const mountView = () =>
   mount(UsersView, {
@@ -16,6 +24,10 @@ const mountView = () =>
   })
 
 describe('UsersView', () => {
+  beforeEach(() => {
+    mockAuthStore.isAdmin = true
+  })
+
   describe('rendering', () => {
     it('renders the Users heading', () => {
       const wrapper = mountView()
@@ -41,6 +53,28 @@ describe('UsersView', () => {
       expect(addButton?.classes()).not.toContain('hidden')
       expect(cancelButton?.classes()).toContain('hidden')
       expect(cancelButton?.classes()).not.toContain('form-submit')
+    })
+  })
+
+  describe('admin actions', () => {
+    it('shows Add User for an admin', () => {
+      mockAuthStore.isAdmin = true
+
+      const wrapper = mountView()
+
+      const addButton = wrapper.findAll('button').find((button) => button.text() === 'Add User')
+
+      expect(addButton?.exists()).toBe(true)
+    })
+
+    it('hides Add User for a non-admin', () => {
+      mockAuthStore.isAdmin = false
+
+      const wrapper = mountView()
+
+      const addButton = wrapper.findAll('button').find((button) => button.text() === 'Add User')
+
+      expect(addButton).toBeUndefined()
     })
   })
 

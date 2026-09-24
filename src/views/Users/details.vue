@@ -81,7 +81,7 @@
             </div>
           </div>
         </div>
-        <div class="flex gap-3 items-center justify-between p-4">
+        <div v-if="authStore.isAdmin" class="flex gap-3 items-center justify-between p-4">
           <button
             type="button"
             class="px-4 py-2 rounded-full text-sm font-semibold form-submit"
@@ -131,6 +131,8 @@ import MaleIcon from '@/components/Icons/MaleIcon.vue'
 import FemaleIcon from '@/components/Icons/FemaleIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import UserUpdateForm from '@/components/Users/UpdateForm.vue'
+import { mapStores } from 'pinia'
+import { useAuthStore } from '@/stores/modules/auth'
 
 export default defineComponent({
   name: 'UserDetails',
@@ -142,6 +144,7 @@ export default defineComponent({
     UserUpdateForm,
   },
   computed: {
+    ...mapStores(useAuthStore),
     headingTitle(): string {
       return `${this.$filters.capitalize(this.user.account_type || '')} ${this.$filters.capitalize(this.user.role || 'User')}`.trim()
     },

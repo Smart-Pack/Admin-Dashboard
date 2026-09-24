@@ -16,6 +16,14 @@ const mockNotifySuccess = vi.fn<(message: string) => void>()
 const mockDeleteModal = vi.fn<(action: string, name: string) => Promise<boolean>>()
 const mockRouterPush = vi.fn<(location: { name: string }) => void>()
 
+const mockAuthStore = {
+  isAdmin: true,
+}
+
+vi.mock('@/stores/modules/auth', () => ({
+  useAuthStore: () => mockAuthStore,
+}))
+
 const mockFilters = {
   capitalize: (value: string) => (value ? value.charAt(0).toUpperCase() + value.slice(1) : ''),
   dateOnly: (value: string) => `dateOnly(${value})`,
@@ -52,6 +60,7 @@ const mountView = () =>
 describe('UserDetails', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockAuthStore.isAdmin = true
     mockGetById.mockResolvedValue(mockUser)
   })
 
@@ -125,7 +134,10 @@ describe('UserDetails', () => {
     })
 
     it('renders the profile picture instead of an icon when profile_pic is set', async () => {
-      mockGetById.mockResolvedValueOnce({ ...mockUser, profile_pic: 'https://example.com/pic.jpg' })
+      mockGetById.mockResolvedValueOnce({
+        ...mockUser,
+        profile_pic: 'https://example.com/pic.jpg',
+      })
 
       const wrapper = mountView()
       await flushPromises()
@@ -135,6 +147,28 @@ describe('UserDetails', () => {
       expect(img.attributes('src')).toBe('https://example.com/pic.jpg')
       expect(wrapper.findComponent(MaleIcon).exists()).toBe(false)
       expect(wrapper.findComponent(FemaleIcon).exists()).toBe(false)
+    })
+  })
+
+  describe('admin actions', () => {
+    it('shows the Update and Suspend/Activate actions for an admin', async () => {
+      mockAuthStore.isAdmin = true
+
+      const wrapper = mountView()
+      await flushPromises()
+
+      expect(wrapper.find('.form-submit').exists()).toBe(true)
+      expect(wrapper.find('.error-btn').exists()).toBe(true)
+    })
+
+    it('hides the Update and Suspend/Activate actions for a non-admin', async () => {
+      mockAuthStore.isAdmin = false
+
+      const wrapper = mountView()
+      await flushPromises()
+
+      expect(wrapper.find('.form-submit').exists()).toBe(false)
+      expect(wrapper.find('.error-btn').exists()).toBe(false)
     })
   })
 
@@ -226,7 +260,7 @@ describe('UserDetails', () => {
       const wrapper = mountView()
       await flushPromises()
 
-      await wrapper.find('.form-submit').trigger('click') // switch to update panel first
+      await wrapper.find('.form-submit').trigger('click')
       mockGetById.mockClear()
 
       await wrapper.findComponent(UserUpdateForm).vm.$emit('close', 'showDetails', true)
@@ -239,7 +273,7 @@ describe('UserDetails', () => {
       const wrapper = mountView()
       await flushPromises()
 
-      await wrapper.find('.form-submit').trigger('click') // switch to update panel first
+      await wrapper.find('.form-submit').trigger('click')
       mockGetById.mockClear()
 
       await wrapper.findComponent(UserUpdateForm).vm.$emit('close', 'showDetails', false)
