@@ -26,6 +26,7 @@ type PasswordErrorResponse = {
 
 export interface User {
   id: number
+  unique_id: string
   first_name: string
   last_name: string
   full_name: string

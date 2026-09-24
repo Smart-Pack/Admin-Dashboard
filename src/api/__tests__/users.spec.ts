@@ -1,5 +1,6 @@
 import type { AxiosError, AxiosInstance } from 'axios'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { mockUser } from '@/tests/constants'
 
 import apiClient from '@/api/client'
 import { USERS } from '@/api/endpoints'
@@ -29,24 +30,7 @@ describe('Users API', () => {
 
   describe('getMe', () => {
     it('fetches the currently authenticated user', async () => {
-      const user: User = {
-        id: 1,
-        first_name: 'John',
-        last_name: 'Doe',
-        full_name: 'John Doe',
-        email: 'john@example.com',
-        phone: '+254712345678',
-        profile_pic: null,
-        account_type: 'customer',
-        role: 'staff',
-        date_of_birth: '2000-01-01',
-        gender: 'male',
-        changed_password_after_initial_login: true,
-        created_at: '2026-09-15T12:33:13.497Z',
-        updated_at: '2026-09-15T12:33:13.497Z',
-        two_factor_enabled: true,
-        status: 'active',
-      }
+      const user = mockUser
 
       vi.mocked(apiClient.get).mockResolvedValueOnce({
         data: user,
@@ -71,22 +55,12 @@ describe('Users API', () => {
       }
 
       const updatedUser: User = {
-        id: 1,
+        ...mockUser,
         first_name: 'Jane',
-        last_name: 'Doe',
         full_name: 'Jane Doe',
         email: 'jane@example.com',
-        phone: '+254712345678',
-        profile_pic: null,
-        account_type: 'customer',
-        role: 'staff',
-        date_of_birth: '2000-01-01',
         gender: 'female',
-        changed_password_after_initial_login: true,
-        created_at: '2026-09-15T12:33:13.497Z',
         updated_at: '2026-09-18T12:33:13.497Z',
-        two_factor_enabled: true,
-        status: 'active',
       }
 
       vi.mocked(apiClient.patch).mockResolvedValueOnce({
@@ -127,23 +101,14 @@ describe('Users API', () => {
         profile_pic: profilePic,
       }
 
-      const updatedUser = {
-        id: 1,
+      const updatedUser: User = {
+        ...mockUser,
         first_name: 'Jane',
-        last_name: 'Doe',
         full_name: 'Jane Doe',
         email: 'jane@example.com',
-        phone: '+254712345678',
         profile_pic: 'https://example.com/profile.jpg',
-        account_type: 'customer' as const,
-        role: 'staff' as const,
-        date_of_birth: '2000-01-01',
-        gender: 'female' as const,
-        changed_password_after_initial_login: true,
-        created_at: '2026-09-15T12:33:13.497Z',
+        gender: 'female',
         updated_at: '2026-09-18T12:33:13.497Z',
-        two_factor_enabled: true,
-        status: 'active',
       }
 
       vi.mocked(apiClient.patch).mockResolvedValueOnce({
@@ -298,22 +263,16 @@ describe('Users API', () => {
       }
 
       const createdUser: User = {
+        ...mockUser,
         id: 2,
         first_name: 'Jane',
-        last_name: 'Doe',
         full_name: 'Jane Doe',
         email: 'jane@example.com',
-        phone: '+254712345678',
-        profile_pic: null,
-        account_type: 'internal',
-        role: 'staff',
-        date_of_birth: '2000-01-01',
         gender: 'female',
         changed_password_after_initial_login: false,
         created_at: '2026-09-23T12:33:13.497Z',
         updated_at: '2026-09-23T12:33:13.497Z',
         two_factor_enabled: false,
-        status: 'active',
       }
 
       vi.mocked(apiClient.post).mockResolvedValueOnce({
@@ -342,22 +301,13 @@ describe('Users API', () => {
       }
 
       const createdUser: User = {
+        ...mockUser,
         id: 3,
-        first_name: 'John',
-        last_name: 'Doe',
-        full_name: 'John Doe',
-        email: 'john@example.com',
-        phone: '+254712345678',
-        profile_pic: null,
-        account_type: 'internal',
-        role: 'staff',
         date_of_birth: null,
-        gender: 'male',
         changed_password_after_initial_login: false,
         created_at: '2026-09-23T12:33:13.497Z',
         updated_at: '2026-09-23T12:33:13.497Z',
         two_factor_enabled: false,
-        status: 'active',
       }
 
       vi.mocked(apiClient.post).mockResolvedValueOnce({
@@ -390,18 +340,11 @@ describe('Users API', () => {
         previous: null,
         results: [
           {
-            id: 1,
-            unique_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+            ...mockUser,
             first_name: 'Jane',
-            last_name: 'Doe',
             full_name: 'Jane Doe',
             email: 'jane@example.com',
-            phone: '+254712345678',
-            profile_pic: null,
-            account_type: 'internal',
-            role: 'staff',
             gender: 'female',
-            status: 'active',
             created_at: '2026-09-23T12:01:29.621Z',
           },
         ],

@@ -2,6 +2,7 @@ import type { User } from '@/api/modules/users'
 
 export const mockUser: User = {
   id: 1,
+  unique_id: '7b9f3c21-84d6-4a17-b2e8-51c7d9036f42',
   first_name: 'John',
   last_name: 'Doe',
   full_name: 'John Doe',
