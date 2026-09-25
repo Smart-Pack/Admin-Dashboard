@@ -6,6 +6,7 @@ import AssignUser from '@/components/Smartpacks/AssignUser.vue'
 import { mockUser } from '@/tests/constants'
 import type { SmartPack } from '@/api/modules/smartpacks'
 import type { User } from '@/api/modules/users'
+import SmartPackQrComponent from '@/components/Smartpacks/QrCode.vue'
 
 const mockGetById = vi.fn<(params: { id: string }) => Promise<SmartPack>>()
 const mockAssign =
@@ -68,6 +69,7 @@ const mountView = () =>
       },
       stubs: {
         AssignUser: true,
+        SmartPackQrComponent: true,
       },
     },
   })
@@ -403,6 +405,57 @@ describe('SmartPackDetails', () => {
 
       expect(mockNotifyError).toHaveBeenCalledWith('Server error')
       expect(mockRouterPush).not.toHaveBeenCalled()
+    })
+  })
+  describe('Print QR', () => {
+    it('shows the Print QR button regardless of admin status', async () => {
+      mockAuthStore.isAdmin = false
+
+      const wrapper = mountView()
+      await flushPromises()
+
+      const printQrBtn = wrapper.find('.form-submit-secondary')
+      expect(printQrBtn.exists()).toBe(true)
+      expect(printQrBtn.text()).toBe('Print QR')
+    })
+
+    it('does not render the QR helper component initially', async () => {
+      const wrapper = mountView()
+      await flushPromises()
+
+      expect(wrapper.findComponent(SmartPackQrComponent).exists()).toBe(false)
+    })
+
+    it('renders the QR helper component when Print QR is clicked', async () => {
+      const wrapper = mountView()
+      await flushPromises()
+
+      await wrapper.find('.form-submit-secondary').trigger('click')
+
+      const qrComponent = wrapper.findComponent(SmartPackQrComponent)
+      expect(qrComponent.exists()).toBe(true)
+      expect(qrComponent.props('item')).toEqual(mockSmartPack)
+    })
+
+    it('hides the QR helper component once it emits show-qr with false', async () => {
+      const wrapper = mountView()
+      await flushPromises()
+
+      await wrapper.find('.form-submit-secondary').trigger('click')
+      expect(wrapper.findComponent(SmartPackQrComponent).exists()).toBe(true)
+
+      await wrapper.findComponent(SmartPackQrComponent).vm.$emit('show-qr', false)
+
+      expect(wrapper.findComponent(SmartPackQrComponent).exists()).toBe(false)
+    })
+
+    it('disables the Print QR button while printingQr is true', async () => {
+      const wrapper = mountView()
+      await flushPromises()
+
+      await wrapper.find('.form-submit-secondary').trigger('click')
+
+      expect(wrapper.find('.form-submit-secondary').attributes('disabled')).toBeDefined()
     })
   })
 })

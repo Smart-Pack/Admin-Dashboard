@@ -82,25 +82,36 @@
         </div>
 
         <!-- Actions -->
-        <div v-if="authStore.isAdmin" class="flex gap-3 items-center justify-between p-4">
-          <button
-            v-if="!smartPack.assigned_to"
-            type="button"
-            class="px-4 py-2 rounded-full text-sm font-semibold form-submit"
-            @click="assignUser"
-            :disabled="submitting"
-          >
-            Assign User
-          </button>
+        <div class="flex gap-4 items-center justify-start lg:justify-between flex-wrap p-4">
+          <template v-if="authStore.isAdmin">
+            <button
+              v-if="!smartPack.assigned_to"
+              type="button"
+              class="px-4 py-2 rounded-full text-sm font-semibold form-submit"
+              @click="assignUser"
+              :disabled="submitting"
+            >
+              Assign User
+            </button>
+
+            <button
+              v-else
+              type="button"
+              class="px-4 py-2 rounded-full text-sm font-semibold error-btn"
+              @click="unassignUser"
+              :disabled="submitting"
+            >
+              Unassign User
+            </button>
+          </template>
 
           <button
-            v-else
             type="button"
-            class="px-4 py-2 rounded-full text-sm font-semibold error-btn"
-            @click="unassignUser"
-            :disabled="submitting"
+            :disabled="printingQr"
+            class="px-4 py-2 rounded-full text-sm font-semibold form-submit-secondary"
+            @click="handlePrintQr(true)"
           >
-            Unassign User
+            Print QR
           </button>
         </div>
       </section>
@@ -113,6 +124,9 @@
       @close="handleShowAssignTable"
       @assign="handleAssign"
     />
+
+    <!-- QR Code helper -->
+    <SmartPackQrComponent v-if="printingQr" :item="smartPack" @show-qr="handlePrintQr" />
   </div>
 </template>
 
@@ -120,7 +134,7 @@
 /**
  * @module views/SmartPacks/Details
  * @description Displays SmartPack details and allows administrators
- * to assign or unassign a customer user.
+ * to assign or unassign a customer user, and to print the SmartPack QR code.
  */
 
 import { defineComponent } from 'vue'
@@ -130,6 +144,7 @@ import type { ItemNotFoundError } from '@/api/types'
 
 import ShoppingBagIcon from '@/components/Icons/ShoppingBagIcon.vue'
 import AssignUser from '@/components/Smartpacks/AssignUser.vue'
+import SmartPackQrComponent from '@/components/Smartpacks/QrCode.vue'
 
 import { useAuthStore } from '@/stores/modules/auth'
 
@@ -139,6 +154,7 @@ export default defineComponent({
   components: {
     ShoppingBagIcon,
     AssignUser,
+    SmartPackQrComponent,
   },
 
   computed: {
@@ -161,6 +177,10 @@ export default defineComponent({
       activePage: 'showDetails' as const,
       showAssignTable: false,
       submitting: false,
+      /**
+       * True while the hidden QR helper should render/download.
+       */
+      printingQr: false,
     }
   },
 
@@ -268,6 +288,13 @@ export default defineComponent({
      */
     handleShowAssignTable(value: boolean): void {
       this.showAssignTable = value
+    },
+
+    /**
+     * Toggles the invisible QR helper so it can trigger the download, then hides it again.
+     */
+    handlePrintQr(value: boolean): void {
+      this.printingQr = value
     },
   },
 })
