@@ -28,6 +28,7 @@ export type SmartPackListItem = SmartPack
 
 export interface SmartPackQueryParams extends PaginationQueryParams {
   assigned_to?: number
+  is_assigned?: boolean
 }
 
 export type SmartPackListResult = PaginatedResponse<SmartPackListItem>

@@ -6,7 +6,7 @@
     name="SmartPacks"
     :item-headings="smartPackHeadings"
     :enable-search="true"
-    nav-class="grid-cols-1 lg:text-base"
+    nav-class="grid-cols-3 lg:text-base"
   />
 </template>
 
@@ -30,6 +30,22 @@ const smartPackTabs: Array<{
     caption: 'All SmartPacks',
     label: 'All',
     params: {},
+  },
+  {
+    id: 'assigned',
+    caption: 'Assigned SmartPacks',
+    label: 'Assigned',
+    params: {
+      is_assigned: true,
+    },
+  },
+  {
+    id: 'unassigned',
+    caption: 'Unassigned SmartPacks',
+    label: 'Unassigned',
+    params: {
+      is_assigned: false,
+    },
   },
 ]
 
@@ -55,6 +71,9 @@ const smartPackHeadings = [
     label: 'Status',
     sortable: true,
     formatter: (value: unknown) => (value ? 'Online' : 'Offline'),
+    dataClass: {
+      fmt: (value: unknown) => Filters.activeClass(Boolean(value)),
+    },
   },
   {
     key: 'assigned_to',

@@ -18,6 +18,7 @@ const mountTable = () =>
       },
       stubs: {
         TablePageLayout: true,
+        RouterLink: true,
       },
     },
   })
@@ -36,7 +37,7 @@ describe('SmartPacksTable', () => {
 
       expect(layout.props('pageDescription')).toContain('Manage registered SmartPacks')
       expect(layout.props('name')).toBe('SmartPacks')
-      expect(layout.props('navClass')).toBe('grid-cols-1 lg:text-base')
+      expect(layout.props('navClass')).toBe('grid-cols-3 lg:text-base')
       expect(layout.props('enableSearch')).toBe(true)
     })
 
@@ -49,24 +50,33 @@ describe('SmartPacksTable', () => {
   })
 
   describe('smartPackTabs', () => {
-    it('passes a single all tab', () => {
+    it('passes 3 tabs', () => {
       const wrapper = mountTable()
       const layout = wrapper.findComponent(TablePageLayout)
       const tabs = layout.props('tabs') as Array<{ id: string; label: string }>
 
-      expect(tabs).toHaveLength(1)
-      expect(tabs.map((tab) => tab.id)).toEqual(['all'])
-      expect(tabs.map((tab) => tab.label)).toEqual(['All'])
+      expect(tabs).toHaveLength(3)
+      expect(tabs.map((tab) => tab.id)).toEqual(['all', 'assigned', 'unassigned'])
+      expect(tabs.map((tab) => tab.label)).toEqual(['All', 'Assigned', 'Unassigned'])
     })
 
-    it('leaves the all tab unscoped', () => {
+    it('passes the correct filter parameters', () => {
       const wrapper = mountTable()
       const layout = wrapper.findComponent(TablePageLayout)
-      const tabs = layout.props('tabs') as Array<{ id: string; params: Record<string, unknown> }>
+      const tabs = layout.props('tabs') as Array<{
+        id: string
+        params: Record<string, unknown>
+      }>
 
-      const all = tabs.find((tab) => tab.id === 'all')
+      expect(tabs.find((tab) => tab.id === 'all')?.params).toEqual({})
 
-      expect(all?.params).toEqual({})
+      expect(tabs.find((tab) => tab.id === 'assigned')?.params).toEqual({
+        is_assigned: true,
+      })
+
+      expect(tabs.find((tab) => tab.id === 'unassigned')?.params).toEqual({
+        is_assigned: false,
+      })
     })
   })
 
