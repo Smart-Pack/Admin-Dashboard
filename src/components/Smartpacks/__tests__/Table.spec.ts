@@ -129,7 +129,7 @@ describe('SmartPacksTable', () => {
           full_name: 'Jane Doe',
           email: 'jane@example.com',
           phone: '+254712345678',
-        })
+        }),
       ).toBe('Jane Doe')
       expect(assignedTo?.formatter?.(null)).toBe('Unassigned')
     })
