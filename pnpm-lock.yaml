@@ -109,9 +109,6 @@ importers:
 
   .:
     dependencies:
-      '@tailwindcss/vite':
-        specifier: ^4.3.3
-        version: 4.3.3(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))
       '@vee-validate/rules':
         specifier: ^4.15.1
         version: 4.15.1(vue@3.5.41(typescript@6.0.3))
@@ -146,6 +143,9 @@ importers:
         specifier: ^6.0.5
         version: 6.0.5(vue@3.5.41(typescript@6.0.3))
     devDependencies:
+      '@tailwindcss/vite':
+        specifier: ^4.3.3
+        version: 4.3.3(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))
       '@tsconfig/node24':
         specifier: ^24.0.4
         version: 24.0.5
