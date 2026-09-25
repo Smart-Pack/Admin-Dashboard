@@ -26,6 +26,7 @@
     "browser-image-compression": "^2.0.2",
     "jwt-decode": "^4.0.0",
     "pinia": "^4.0.2",
+    "qrcode-vue3": "^1.7.1",
     "sweetalert2": "^11.26.25",
     "tailwindcss": "^4.3.3",
     "vee-validate": "^4.15.1",
