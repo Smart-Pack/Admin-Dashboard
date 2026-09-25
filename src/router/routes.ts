@@ -127,6 +127,28 @@ const routes: RouteRecordRaw[] = [
           },
         ],
       },
+      // SmartPacks section
+      {
+        path: 'smartpacks',
+        name: 'smartpacks-parent',
+        redirect: { name: 'smartpacks' },
+        component: RouterViewWrapper,
+        meta: { breadcrumb: 'SmartPacks' },
+        children: [
+          {
+            path: '',
+            name: 'smartpacks',
+            component: () => import('@/views/Smartpacks/index.vue'),
+            meta: { title: 'SmartPack Management', breadcrumb: 'SmartPacks' },
+          },
+          {
+            path: ':id/details',
+            name: 'smartpack-details',
+            component: () => import('@/views/Smartpacks/details.vue'),
+            meta: { title: 'SmartPack Details', breadcrumb: 'SmartPack Details' },
+          },
+        ],
+      },
     ],
   },
   // Fallback route for any unmatched URL so users land on the dashboard
