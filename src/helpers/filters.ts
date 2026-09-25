@@ -52,4 +52,17 @@ export default {
       dateStyle: 'medium',
     }).format(new Date(value))
   },
+  /**
+   * Returns dynamic Tailwind CSS classes for a status badge based on a boolean value.
+   * Mainly used for connectivity status.
+   *
+   * @param value - The boolean status value.
+   * @returns A string of Tailwind CSS classes for the badge.
+   */
+  activeClass(value: boolean): string {
+    const common =
+      'text-transparent w-6 h-6 border-2 border-card-border dark:border-card-borderDark rounded-full overflow-hidden p-0 block'
+
+    return value === true ? `bg-green-700 ${common}` : `bg-error ${common}`
+  },
 }

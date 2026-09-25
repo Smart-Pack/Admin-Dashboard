@@ -33,3 +33,10 @@ export const USERS = {
   },
   detail: (id: string | number): string => `v1/users/${id}/`,
 } as const
+
+export const SMARTPACKS = {
+  COLLECTION: 'v1/smartpacks/',
+  detail: (id: string | number): string => `v1/smartpacks/${id}/`,
+  assign: (id: string | number): string => `v1/smartpacks/${id}/assign/`,
+  unassign: (id: string | number): string => `v1/smartpacks/${id}/unassign/`,
+} as const
