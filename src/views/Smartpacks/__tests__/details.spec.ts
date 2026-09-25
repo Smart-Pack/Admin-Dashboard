@@ -70,6 +70,11 @@ const mountView = () =>
       stubs: {
         AssignUser: true,
         SmartPackQrComponent: true,
+        RouterLink: {
+          name: 'RouterLink',
+          props: ['to'],
+          template: '<a><slot /></a>',
+        },
       },
     },
   })
@@ -141,16 +146,21 @@ describe('SmartPackDetails', () => {
 
   describe('assigned_to rendering', () => {
     it('shows an em dash when unassigned', async () => {
-      mockGetById.mockResolvedValueOnce({ ...mockSmartPack, assigned_to: null })
+      mockGetById.mockResolvedValueOnce({
+        ...mockSmartPack,
+        assigned_to: null,
+      })
 
       const wrapper = mountView()
       await flushPromises()
 
-      const assignedToLabel = wrapper.findAll('dt').find((dt) => dt.text() === 'Assigned To')
-      expect(assignedToLabel?.element.nextElementSibling?.textContent?.trim()).toBe('—')
+      const assignedUser = wrapper.find('[title="Assigned User"]')
+
+      expect(assignedUser.exists()).toBe(true)
+      expect(assignedUser.text().trim()).toBe('—')
     })
 
-    it("shows the assigned user's full name when assigned", async () => {
+    it("shows the assigned user's full name as a link when assigned", async () => {
       mockGetById.mockResolvedValueOnce({
         ...mockSmartPack,
         assigned_to: {
@@ -165,7 +175,16 @@ describe('SmartPackDetails', () => {
       const wrapper = mountView()
       await flushPromises()
 
-      expect(wrapper.text()).toContain(mockUser.full_name)
+      const assignedUser = wrapper.find('[title="Assigned User"]')
+      const link = assignedUser.findComponent({ name: 'RouterLink' })
+
+      expect(assignedUser.exists()).toBe(true)
+      expect(assignedUser.text()).toContain(mockUser.full_name)
+      expect(link.exists()).toBe(true)
+      expect(link.props('to')).toEqual({
+        name: 'user-details',
+        params: { id: mockUser.id },
+      })
     })
   })
 

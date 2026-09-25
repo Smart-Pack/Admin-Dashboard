@@ -16,6 +16,23 @@
           <h2 class="main-heading text-xl lg:text-2xl">SmartPack</h2>
           <h3 class="sub-heading lg:text-lg">{{ smartPack.hardware_model || '—' }}</h3>
 
+          <div class="flex secondary-text justify-start w-full" title="Assigned User">
+            <UserIcon class="secondary-text text-left mr-2" />
+
+            <RouterLink
+              v-if="smartPack.assigned_to"
+              :to="{
+                name: 'user-details',
+                params: { id: smartPack.assigned_to.id },
+              }"
+              class="primary-text hover:underline"
+            >
+              {{ smartPack.assigned_to.full_name }}
+            </RouterLink>
+
+            <span v-else>—</span>
+          </div>
+
           <div class="flex secondary-text justify-start w-full" title="Connection Status">
             <span :class="$filters.activeClass(smartPack.is_online)"></span>
             <span class="ml-2">
@@ -35,13 +52,6 @@
           <!-- Left -->
           <div>
             <div>
-              <dt class="mt-1 primary-text">Hardware Model</dt>
-              <dd class="mt-1 secondary-text">
-                {{ smartPack.hardware_model || '—' }}
-              </dd>
-            </div>
-
-            <div>
               <dt class="mt-1 primary-text">IMEI</dt>
               <dd class="mt-1 secondary-text">
                 {{ smartPack.imei || '—' }}
@@ -58,13 +68,6 @@
 
           <!-- Right -->
           <div>
-            <div>
-              <dt class="mt-1 primary-text">Assigned To</dt>
-              <dd class="mt-1 secondary-text">
-                {{ smartPack.assigned_to?.full_name || '—' }}
-              </dd>
-            </div>
-
             <div>
               <dt class="mt-1 primary-text">Last Seen</dt>
               <dd class="mt-1 secondary-text">
@@ -143,6 +146,7 @@ import type { User } from '@/api/modules/users'
 import type { ItemNotFoundError } from '@/api/types'
 
 import ShoppingBagIcon from '@/components/Icons/ShoppingBagIcon.vue'
+import UserIcon from '@/components/Icons/UserIcon.vue'
 import AssignUser from '@/components/Smartpacks/AssignUser.vue'
 import SmartPackQrComponent from '@/components/Smartpacks/QrCode.vue'
 
@@ -153,6 +157,7 @@ export default defineComponent({
 
   components: {
     ShoppingBagIcon,
+    UserIcon,
     AssignUser,
     SmartPackQrComponent,
   },
