@@ -49,7 +49,8 @@
       >
         <img
           v-if="authStore.loggedInUser?.profile_pic"
-          :src="authStore.loggedInUser.profile_pic"
+          :src="withCacheBust(authStore.loggedInUser.profile_pic)"
+          :key="authStore.loggedInUser.profile_pic"
           alt="Profile Picture"
           class="w-12 h-12 object-cover inline rounded-full"
         />
@@ -105,6 +106,7 @@ import SmartPackLogo from '@/components/Icons/SmartPackLogo.vue'
 import UserIcon from '@/components/Icons/UserIcon.vue'
 import { auth } from '@/api'
 import { useAuthStore, useUiStore } from '@/stores'
+import { withCacheBust } from '@/utils/urlSecurity'
 
 /**
  * Dashboard navigation bar.

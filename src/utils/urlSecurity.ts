@@ -1,4 +1,5 @@
 const ALLOWED_EXTERNAL_URL_PROTOCOLS = new Set(['http:', 'https:'])
+const SIGNED_URL_PARAMS = ['X-Amz-Signature', 'Signature', 'Expires', 'token']
 
 /**
  * Returns a normalized http(s) URL for safe external navigation.
@@ -19,4 +20,26 @@ export function safeExternalHref(value: unknown): string | null {
   } catch {
     return null
   }
+}
+
+/**
+ * Appends a cache-busting query parameter to an unsigned URL.
+ *
+ * Signed URLs are returned unchanged because modifying their query
+ * parameters may invalidate the signature or authentication.
+ *
+ * @param url - The URL to process, or `null`.
+ * @returns The original URL for signed URLs, a cache-busted URL for
+ *   unsigned URLs, or `undefined` when no URL is provided.
+ */
+export function withCacheBust(url: string | null): string | undefined {
+  if (!url) return undefined
+
+  if (url.startsWith('blob:') || SIGNED_URL_PARAMS.some((param) => url.includes(`${param}=`))) {
+    return url
+  }
+
+  const separator = url.includes('?') ? '&' : '?'
+
+  return `${url}${separator}v=${Date.now()}`
 }

@@ -9,7 +9,8 @@
     <div class="lg:hidden center-flex-col gap-2">
       <img
         v-if="authStore.loggedInUser?.profile_pic"
-        :src="authStore.loggedInUser.profile_pic"
+        :src="withCacheBust(authStore.loggedInUser.profile_pic)"
+        :key="authStore.loggedInUser.profile_pic"
         alt="Profile Picture"
         class="w-20 h-20 object-cover rounded-full"
       />
@@ -81,6 +82,7 @@ import ShoppingBagIcon from '@/components/Icons/ShoppingBagIcon.vue'
 import LightModeIcon from '@/components/Icons/LightModeIcon.vue'
 import UserGroupIcon from '@/components/Icons/UserGroupIcon.vue'
 import { useAuthStore, useUiStore } from '@/stores'
+import { withCacheBust } from '@/utils/urlSecurity'
 
 defineOptions({
   name: 'DashboardSideNav',

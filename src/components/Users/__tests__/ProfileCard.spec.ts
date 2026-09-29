@@ -273,6 +273,50 @@ describe('ProfileCard', () => {
       expect(wrapper.find('.user-icon-stub').exists()).toBe(true)
       expect(wrapper.find('img').exists()).toBe(false)
     })
+    it('renders the profile picture when available', async () => {
+      vi.spyOn(Date, 'now').mockReturnValue(1234567890)
+
+      const user: User = {
+        ...mockUser,
+        profile_pic: 'https://example.com/profile.jpg',
+      }
+
+      mockGetMe.mockResolvedValue(user)
+
+      const wrapper = wrapperFactory()
+      await flushPromises()
+
+      const image = wrapper.get('img')
+
+      expect(image.attributes('src')).toBe('https://example.com/profile.jpg?v=1234567890')
+      expect(image.attributes('alt')).toBe('Profile Picture')
+
+      vi.restoreAllMocks()
+    })
+    it('updates the profile picture preview when a new file is selected', async () => {
+      const wrapper = await wrapperFactory()
+
+      await flushPromises()
+      await wrapper.get('[data-testid="edit-profile-button"]').trigger('click')
+
+      const input = wrapper.get('[data-testid="profile-picture-input"]')
+      const file = new File(['x'], 'photo.png', { type: 'image/png' })
+
+      Object.defineProperty(input.element, 'files', {
+        value: [file],
+        configurable: true,
+      })
+
+      vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:preview')
+
+      await input.trigger('change')
+
+      const image = wrapper.get('img')
+
+      expect(image.attributes('src')).toBe('blob:preview')
+
+      vi.restoreAllMocks()
+    })
   })
 
   describe('edit mode', () => {

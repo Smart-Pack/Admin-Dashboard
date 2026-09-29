@@ -7,7 +7,13 @@
       <div class="px-2">
         <UserIcon v-if="!profilePic" class="w-48 h-48 lg:w-52 lg:h-52 primary-text" />
 
-        <img v-else :src="profilePic" class="w-48 h-48 lg:w-52 lg:h-52 object-cover" />
+        <img
+          v-else
+          :src="withCacheBust(profilePic)"
+          :key="profilePic"
+          alt="Profile Picture"
+          class="w-48 h-48 lg:w-52 lg:h-52 object-cover"
+        />
 
         <input
           v-if="editProfileMode"
@@ -179,6 +185,7 @@ import LockOpenIcon from '@/components/Icons/LockOpenIcon.vue'
 import UserIcon from '@/components/Icons/UserIcon.vue'
 import { useGlobals } from '@/composables/useGlobals'
 import { useAuthStore } from '@/stores'
+import { withCacheBust } from '@/utils/urlSecurity'
 
 defineOptions({
   name: 'ProfileCard',
