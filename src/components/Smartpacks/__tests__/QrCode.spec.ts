@@ -70,13 +70,13 @@ describe('SmartPackQrComponent', () => {
 
   describe('rendering', () => {
     it('passes download configuration through to QRCodeVue3', () => {
-      const wrapper = mountQr({ device_uid: 'SP-0001' })
+      const wrapper = mountQr({ device_uid: 'SP-0001', imei: '228573283279319' })
       const qr = findQr(wrapper)
 
       expect(qr.props('download')).toBe(true)
       expect(qr.props('downloadButton')).toBe('smartpack-qr-button')
       expect(qr.props('downloadOptions')).toEqual({
-        name: 'smartpack_qr_SP-0001',
+        name: 'smartpack_qr_228573283279319',
         extension: 'png',
       })
 

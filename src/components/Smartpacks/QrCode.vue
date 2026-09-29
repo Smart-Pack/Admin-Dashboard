@@ -10,7 +10,7 @@
       :download="true"
       downloadButton="smartpack-qr-button"
       :downloadOptions="{
-        name: `smartpack_qr_${item.device_uid}`,
+        name: `smartpack_qr_${item.imei}`,
         extension: 'png',
       }"
     />
