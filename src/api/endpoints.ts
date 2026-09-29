@@ -40,3 +40,7 @@ export const SMARTPACKS = {
   assign: (id: string | number): string => `v1/smartpacks/${id}/assign/`,
   unassign: (id: string | number): string => `v1/smartpacks/${id}/unassign/`,
 } as const
+
+export const ANALYSIS = {
+  ADMIN_GENERAL: 'v1/core/analysis/admin-general/',
+} as const
