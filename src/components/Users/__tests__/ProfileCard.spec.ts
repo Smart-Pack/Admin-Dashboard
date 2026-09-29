@@ -10,6 +10,7 @@ import ProfileCard from '../ProfileCard.vue'
 // --- Types -------------------------------------------------------------
 
 type UseFormReturn = {
+  errors: Record<string, string | undefined>
   handleSubmit: (
     fn: (values: Record<string, unknown>) => Promise<void>,
   ) => (values: Record<string, unknown>) => unknown
@@ -54,6 +55,7 @@ vi.mock('@/api/modules/users', () => ({
 vi.mock('vee-validate', () => ({
   useForm: vi.fn<(config: { initialValues: Record<string, unknown> }) => UseFormReturn>(
     (_config) => ({
+      errors: {},
       handleSubmit: (fn: (values: Record<string, unknown>) => Promise<void>) => {
         return fn
       },
@@ -75,19 +77,6 @@ vi.mock('@/composables/useGlobals', () => ({
     $notifySuccess: mockNotifySuccess,
     $notifyError: mockNotifyError,
   }),
-}))
-
-vi.mock('browser-image-compression', () => ({
-  default: vi.fn<
-    (
-      file: File,
-      options?: {
-        maxSizeMB?: number
-        maxWidthOrHeight?: number
-        useWebWorker?: boolean
-      },
-    ) => Promise<File>
-  >(),
 }))
 
 // --- Stubs -------------------------------------------------------------
@@ -331,6 +320,40 @@ describe('ProfileCard', () => {
 
       expect(editButton.text()).toBe('Edit Profile')
       expect(wrapper.find('[data-testid="profile-picture-input"]').exists()).toBe(false)
+    })
+    it('clears the profile picture error when a file is selected', async () => {
+      const wrapper = await wrapperFactory()
+
+      await flushPromises()
+      await wrapper.get('[data-testid="edit-profile-button"]').trigger('click')
+
+      const input = wrapper.get('[data-testid="profile-picture-input"]')
+      const file = new File(['x'], 'photo.png', { type: 'image/png' })
+
+      Object.defineProperty(input.element, 'files', { value: [file], configurable: true })
+      URL.createObjectURL = vi.fn<(obj: Blob | MediaSource) => string>(() => 'blob:preview')
+
+      await input.trigger('change')
+
+      expect(mockSetFieldError).toHaveBeenCalledWith('profile_pic', undefined)
+      expect(wrapper.find('img').exists()).toBe(true)
+    })
+
+    it('rejects non-image files', async () => {
+      const wrapper = await wrapperFactory()
+
+      await flushPromises()
+      await wrapper.get('[data-testid="edit-profile-button"]').trigger('click')
+
+      const input = wrapper.get('[data-testid="profile-picture-input"]')
+      const file = new File(['x'], 'doc.pdf', { type: 'application/pdf' })
+
+      Object.defineProperty(input.element, 'files', { value: [file], configurable: true })
+
+      await input.trigger('change')
+
+      expect(mockNotifyError).toHaveBeenCalledWith('Please select an image file.')
+      expect(wrapper.find('img').exists()).toBe(false)
     })
   })
 

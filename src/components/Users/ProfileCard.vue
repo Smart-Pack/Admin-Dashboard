@@ -1,45 +1,54 @@
 <template>
   <div class="mt-4">
     <p class="secondary-text text-sm">Keep your personal and contact information up to date.</p>
+
     <!-- Profile Pic -->
     <div class="grid gap-4 md:grid-cols-2 my-4">
       <div class="px-2">
         <UserIcon v-if="!profilePic" class="w-48 h-48 lg:w-52 lg:h-52 primary-text" />
+
         <img v-else :src="profilePic" class="w-48 h-48 lg:w-52 lg:h-52 object-cover" />
+
         <input
           v-if="editProfileMode"
+          ref="profilePicture"
           data-testid="profile-picture-input"
-          :disabled="compressing"
           type="file"
           accept="image/*"
-          ref="profilePicture"
-          @change="handleProfilePictureChange"
           class="mt-4 form-submit-secondary p-2 text-sm w-56"
+          @change="handleProfilePictureChange"
         />
-        <div v-if="compressing" class="my-2 flex items-center">
-          <span class="primary-text"> Compressing... </span>
-          <div class="ml-4 link-spinner"></div>
-        </div>
+
+        <p
+          v-if="errors.profile_pic"
+          data-testid="profile-picture-error"
+          class="text-red-500 text-sm mt-1"
+        >
+          {{ errors.profile_pic }}
+        </p>
       </div>
     </div>
+
     <button
       data-testid="edit-profile-button"
       type="button"
       class="form-submit px-5 py-2 text-sm font-semibold mx-auto mt-2 mb-2"
-      :disabled="isActive || submitting || compressing"
+      :disabled="isActive || submitting"
       @click="toggleEditProfileMode"
     >
       {{ editProfileMode ? 'Cancel Editing' : 'Edit Profile' }}
     </button>
 
-    <form @submit.prevent="updateProfile" class="space-y-6 mt-8">
+    <form class="space-y-6 mt-8" @submit.prevent="updateProfile">
       <section class="space-y-4">
         <h2 class="font-poppins tracking-[0.4em] uppercase underline secondary-text">
           Basic Information
         </h2>
+
         <div class="grid gap-4 md:grid-cols-2">
           <div>
             <label class="secondary-text font-semibold mb-1">First Name</label>
+
             <InputField
               v-model="user.first_name"
               name="first_name"
@@ -50,8 +59,10 @@
               :input-class="viewInputClass"
             />
           </div>
+
           <div>
             <label class="secondary-text font-semibold mb-1">Last Name</label>
+
             <InputField
               v-model="user.last_name"
               name="last_name"
@@ -62,8 +73,10 @@
               :input-class="viewInputClass"
             />
           </div>
+
           <div>
             <label class="secondary-text font-semibold mb-1">Gender</label>
+
             <InputField
               v-model="user.gender"
               name="gender"
@@ -74,8 +87,10 @@
               :input-class="viewInputClass"
             />
           </div>
+
           <div>
             <label class="secondary-text font-semibold mb-1">Date of Birth</label>
+
             <InputField
               v-model="user.date_of_birth"
               name="date_of_birth"
@@ -94,9 +109,11 @@
         <h2 class="font-poppins tracking-[0.4em] uppercase underline secondary-text">
           Contact Information
         </h2>
+
         <div class="grid gap-4 md:grid-cols-2">
           <div>
             <label class="secondary-text font-semibold mb-1">Email</label>
+
             <InputField
               v-model="user.email"
               name="email"
@@ -108,8 +125,10 @@
               :input-class="viewInputClass"
             />
           </div>
+
           <div>
             <label class="secondary-text font-semibold mb-1">Phone</label>
+
             <InputField
               v-model="user.phone"
               name="phone"
@@ -129,9 +148,10 @@
           data-testid="save-profile-button"
           type="submit"
           class="form-submit px-6 py-2 text-sm font-semibold center-flex"
-          :disabled="submitting || compressing"
+          :disabled="submitting"
         >
           <span>{{ submitting ? 'Saving...' : 'Save Changes' }}</span>
+
           <div v-if="submitting" class="ml-4 submit-spinner"></div>
         </button>
       </div>
@@ -145,10 +165,9 @@
  * @description Displays and manages the authenticated user's profile information.
  *
  * Provides profile viewing and editing functionality, including personal and
- * contact information updates, profile picture compression and preview, and
- * API validation error handling.
+ * contact information updates, profile picture preview, and API validation
+ * error handling.
  */
-import imageCompression from 'browser-image-compression'
 import { isAxiosError } from 'axios'
 import { computed, markRaw, onMounted, reactive, ref } from 'vue'
 import { useForm } from 'vee-validate'
@@ -165,7 +184,7 @@ defineOptions({
   name: 'ProfileCard',
 })
 
-type ProfileField = Exclude<keyof EditMePayload, 'profile_pic'>
+type ProfileField = keyof EditMePayload
 
 const profileFields: ProfileField[] = [
   'first_name',
@@ -174,6 +193,7 @@ const profileFields: ProfileField[] = [
   'phone',
   'date_of_birth',
   'gender',
+  'profile_pic',
 ]
 
 const authStore = useAuthStore()
@@ -181,7 +201,6 @@ const { $notifySuccess, $notifyError } = useGlobals()
 
 const editProfileMode = ref(false)
 const isActive = ref(false)
-const compressing = ref(false)
 const submitting = ref(false)
 
 const profilePic = ref<string | null>(null)
@@ -197,8 +216,8 @@ const user = reactive({
   gender: '' as EditMePayload['gender'] | '',
 })
 
-const { handleSubmit, resetForm, setFieldError } = useForm({
-  initialValues: user,
+const { errors, handleSubmit, resetForm, setFieldError } = useForm<EditMePayload>({
+  initialValues: user as Partial<EditMePayload>,
 })
 
 const viewInputClass = computed(() => {
@@ -229,9 +248,6 @@ function setFormValues(currentUser: Awaited<ReturnType<typeof getMe>>): void {
 
 /**
  * Fetches the authenticated user's profile and initializes the profile form.
- *
- * Updates the authentication store and profile picture with the fetched
- * user's details.
  */
 async function getProfile(): Promise<void> {
   isActive.value = true
@@ -270,6 +286,7 @@ function toggleEditProfileMode(): void {
     }
 
     profilePicFile.value = null
+    setFieldError('profile_pic', undefined)
 
     if (profilePicture.value) {
       profilePicture.value.value = ''
@@ -278,64 +295,45 @@ function toggleEditProfileMode(): void {
 }
 
 /**
- * Validates and compresses a selected profile picture.
- *
- * The compressed image is stored as a preview URL and as a file ready
- * to be submitted with the profile update.
+ * Handles profile picture selection without compression.
  *
  * @param event - The file input change event.
  */
-async function handleProfilePictureChange(event: Event): Promise<void> {
+function handleProfilePictureChange(event: Event): void {
+  setFieldError('profile_pic', undefined)
+
   const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
+  const file = input.files?.[0] ?? null
 
   if (!file) {
+    profilePicFile.value = null
     return
   }
 
   if (!file.type.startsWith('image/')) {
     $notifyError('Please select an image file.')
+
     input.value = ''
     profilePicFile.value = null
+
     return
   }
 
   if (file.size > 5 * 1024 * 1024) {
     $notifyError('Profile Picture must be less than 5 MB')
+
     input.value = ''
     profilePicFile.value = null
+
     return
   }
 
-  try {
-    compressing.value = true
-
-    const compressedFile = await imageCompression(file, {
-      maxSizeMB: 2,
-      maxWidthOrHeight: 1200,
-      useWebWorker: true,
-    })
-
-    if (profilePic.value?.startsWith('blob:')) {
-      URL.revokeObjectURL(profilePic.value)
-    }
-
-    profilePic.value = URL.createObjectURL(compressedFile)
-
-    const extension = file.name.split('.').pop()?.toLowerCase() ?? 'jpg'
-
-    profilePicFile.value = new File([compressedFile], `profile.${extension}`, {
-      type: file.type,
-    })
-  } catch {
-    $notifyError('Unable to compress the image, try another file.')
-
-    input.value = ''
-    profilePicFile.value = null
-    profilePic.value = authStore.loggedInUser?.profile_pic ?? null
-  } finally {
-    compressing.value = false
+  if (profilePic.value?.startsWith('blob:')) {
+    URL.revokeObjectURL(profilePic.value)
   }
+
+  profilePicFile.value = file
+  profilePic.value = URL.createObjectURL(file)
 }
 
 /**
@@ -361,6 +359,10 @@ const updateProfile = handleSubmit(async (values) => {
     const updatedUser = await editMe(payload)
 
     authStore.setLoggedInUser(updatedUser)
+
+    if (profilePic.value?.startsWith('blob:')) {
+      URL.revokeObjectURL(profilePic.value)
+    }
 
     profilePic.value = updatedUser.profile_pic
     profilePicFile.value = null
