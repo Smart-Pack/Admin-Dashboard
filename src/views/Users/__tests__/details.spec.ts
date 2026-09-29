@@ -3,6 +3,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest'
 
 import UserDetails from '@/views/Users/details.vue'
 import UserUpdateForm from '@/components/Users/UpdateForm.vue'
+import UserAssets from '@/components/Users/Assets.vue'
 import MaleIcon from '@/components/Icons/MaleIcon.vue'
 import FemaleIcon from '@/components/Icons/FemaleIcon.vue'
 import { mockUser } from '@/tests/constants'
@@ -55,9 +56,12 @@ const mountView = () =>
       },
       stubs: {
         UserUpdateForm: true,
+        UserAssets: true,
       },
     },
   })
+
+const mockUserWith = (overrides: Partial<User>): User => ({ ...mockUser, ...overrides })
 
 describe('UserDetails', () => {
   beforeEach(() => {
@@ -349,5 +353,59 @@ describe('UserDetails', () => {
 
       expect(wrapper.find('.error-btn').attributes('disabled')).toBeDefined()
     })
+  })
+})
+
+describe('UserAssets', () => {
+  it('renders for customers and receives the user id and name', async () => {
+    mockGetById.mockResolvedValue(
+      mockUserWith({ account_type: 'customer', full_name: 'Jane Doe' } as Partial<User>),
+    )
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    const assets = wrapper.findComponent(UserAssets)
+
+    expect(assets.exists()).toBe(true)
+    expect(assets.props('userId')).toBe(mockUser.id)
+    expect(assets.props('userName')).toBe('Jane Doe')
+  })
+
+  it('matches the customer account type case-insensitively', async () => {
+    mockGetById.mockResolvedValue(mockUserWith({ account_type: 'customer' }))
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    expect(wrapper.findComponent(UserAssets).exists()).toBe(true)
+  })
+
+  it('is hidden for non-customer accounts', async () => {
+    mockGetById.mockResolvedValue(mockUserWith({ account_type: 'internal' }))
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    expect(wrapper.findComponent(UserAssets).exists()).toBe(false)
+  })
+
+  it('is hidden while the user is still loading', () => {
+    mockGetById.mockReturnValue(new Promise<User>(() => {}))
+
+    const wrapper = mountView()
+
+    expect(wrapper.findComponent(UserAssets).exists()).toBe(false)
+  })
+
+  it('is hidden when the user has no id', async () => {
+    mockGetById.mockResolvedValue(
+      mockUserWith({ account_type: 'customer', id: undefined as unknown as User['id'] }),
+    )
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    expect(wrapper.findComponent(UserAssets).exists()).toBe(false)
   })
 })
