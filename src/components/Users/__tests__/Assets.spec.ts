@@ -18,6 +18,10 @@ type Heading = {
 
 const mountTable = () =>
   mount(SmartPacksTable, {
+    props: {
+      userId: 1,
+      userName: 'Jane Doe',
+    },
     global: {
       mocks: {
         $api: {
@@ -55,7 +59,9 @@ describe('SmartPacksTable', () => {
       const wrapper = mountTable()
       const layout = wrapper.findComponent(TablePageLayout)
 
-      expect(layout.props('pageDescription')).toContain('Manage registered SmartPacks')
+      expect(layout.props('pageDescription')).toContain(
+        'SmartPacks assigned to Jane Doe, with their connectivity and firmware details.',
+      )
       expect(layout.props('name')).toBe('SmartPacks')
       expect(layout.props('navClass')).toBe('grid-cols-1 lg:text-base')
       expect(layout.props('enableSearch')).toBe(true)
@@ -87,7 +93,7 @@ describe('SmartPacksTable', () => {
       })
     })
 
-    it('passes no filter parameters for the All tab', () => {
+    it('passes the user ID as a filter for the All tab', () => {
       const wrapper = mountTable()
       const layout = wrapper.findComponent(TablePageLayout)
       const tabs = layout.props('tabs') as Array<{
@@ -95,7 +101,9 @@ describe('SmartPacksTable', () => {
         params: Record<string, unknown>
       }>
 
-      expect(tabs.find((tab) => tab.id === 'all')?.params).toEqual({})
+      expect(tabs.find((tab) => tab.id === 'all')?.params).toEqual({
+        assigned_to: 1,
+      })
     })
   })
 
