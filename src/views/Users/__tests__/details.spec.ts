@@ -106,12 +106,30 @@ describe('UserDetails', () => {
   })
 
   describe('headingTitle', () => {
-    it('capitalizes and joins account_type and role', async () => {
+    it('displays Customer for customer accounts', async () => {
+      mockGetById.mockResolvedValueOnce({
+        ...mockUser,
+        account_type: 'customer',
+        role: 'staff',
+      })
+
       const wrapper = mountView()
       await flushPromises()
 
-      const expected = `${mockFilters.capitalize(mockUser.account_type)} ${mockFilters.capitalize(mockUser.role)}`
-      expect(wrapper.text()).toContain(expected)
+      expect(wrapper.text()).toContain('Customer')
+    })
+
+    it('displays the role for internal accounts', async () => {
+      mockGetById.mockResolvedValueOnce({
+        ...mockUser,
+        account_type: 'internal',
+        role: 'admin',
+      })
+
+      const wrapper = mountView()
+      await flushPromises()
+
+      expect(wrapper.text()).toContain('Admin')
     })
   })
 

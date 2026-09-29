@@ -25,7 +25,11 @@
             {{ headingTitle }}
           </h2>
           <h3 class="sub-heading lg:text-lg">{{ user.first_name }} {{ user.last_name }}</h3>
-          <div class="flex secondary-text justify-start w-full" :title="user?.account_type">
+          <div
+            v-if="showAccountType"
+            class="flex secondary-text justify-start w-full"
+            :title="user?.account_type"
+          >
             <BriefcaseIcon class="secondary-text text-left" />
             <span>{{ $filters.capitalize(user.account_type) }}</span>
           </div>
@@ -152,7 +156,14 @@ export default defineComponent({
       return useAuthStore(this.$pinia)
     },
     headingTitle(): string {
-      return `${this.$filters.capitalize(this.user.account_type || '')} ${this.$filters.capitalize(this.user.role || 'User')}`.trim()
+      if (this.user.account_type === 'customer') {
+        return 'Customer'
+      }
+
+      return this.$filters.capitalize(this.user.role || 'User')
+    },
+    showAccountType() {
+      return !!this.user && (this.user.account_type || '').toLowerCase() !== 'customer'
     },
     userId(): { id: string } {
       const id = this.$route.params.id
