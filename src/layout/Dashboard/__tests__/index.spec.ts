@@ -1,9 +1,11 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount, type VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia, type Pinia } from 'pinia'
 
 import DashboardLayout from '../index.vue'
-import { useUiStore } from '@/stores'
+import { useAuthStore, useUiStore } from '@/stores'
+
+const USER_REFRESH_INTERVAL = 10 * 60 * 1000
 
 const stubs = {
   TopBar: {
@@ -35,6 +37,8 @@ const stubs = {
 describe('DashboardLayout', () => {
   let pinia: Pinia
   let uiStore: ReturnType<typeof useUiStore>
+  let authStore: ReturnType<typeof useAuthStore>
+  let fetchUserMock: ReturnType<typeof vi.fn<() => Promise<void>>>
 
   const mountDashboardLayout = (): VueWrapper =>
     mount(DashboardLayout, {
@@ -45,16 +49,26 @@ describe('DashboardLayout', () => {
     })
 
   beforeEach(() => {
+    vi.useFakeTimers()
+
     pinia = createPinia()
     setActivePinia(pinia)
 
     uiStore = useUiStore(pinia)
+    authStore = useAuthStore(pinia)
+
+    fetchUserMock = vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
+    authStore.fetchUser = fetchUserMock as unknown as typeof authStore.fetchUser
 
     uiStore.swalBackdrop = false
     uiStore.isSideNavOpen = false
     uiStore.isLightMode = true
 
     document.documentElement.classList.remove('dark')
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   describe('rendering', () => {
@@ -162,6 +176,76 @@ describe('DashboardLayout', () => {
       await wrapper.vm.$nextTick()
 
       expect(document.documentElement.classList.contains('dark')).toBe(false)
+    })
+  })
+  describe('user refresh', () => {
+    it('does not fetch the user immediately on mount', () => {
+      mountDashboardLayout()
+
+      expect(fetchUserMock).not.toHaveBeenCalled()
+    })
+
+    it('does not fetch the user before the interval has elapsed', () => {
+      mountDashboardLayout()
+
+      vi.advanceTimersByTime(USER_REFRESH_INTERVAL - 1)
+
+      expect(fetchUserMock).not.toHaveBeenCalled()
+    })
+
+    it('fetches the user once the interval has elapsed', () => {
+      mountDashboardLayout()
+
+      vi.advanceTimersByTime(USER_REFRESH_INTERVAL)
+
+      expect(fetchUserMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('keeps fetching the user on every interval', () => {
+      mountDashboardLayout()
+
+      vi.advanceTimersByTime(USER_REFRESH_INTERVAL * 3)
+
+      expect(fetchUserMock).toHaveBeenCalledTimes(3)
+    })
+
+    it('suppresses errors from a failed refresh', async () => {
+      fetchUserMock.mockRejectedValue(new Error('Network error'))
+
+      mountDashboardLayout()
+
+      await vi.advanceTimersByTimeAsync(USER_REFRESH_INTERVAL)
+
+      expect(fetchUserMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('continues refreshing after a failed refresh', async () => {
+      fetchUserMock.mockRejectedValueOnce(new Error('Network error'))
+
+      mountDashboardLayout()
+
+      await vi.advanceTimersByTimeAsync(USER_REFRESH_INTERVAL * 2)
+
+      expect(fetchUserMock).toHaveBeenCalledTimes(2)
+    })
+
+    it('stops refreshing when the layout is unmounted', () => {
+      const wrapper = mountDashboardLayout()
+
+      wrapper.unmount()
+
+      vi.advanceTimersByTime(USER_REFRESH_INTERVAL * 3)
+
+      expect(fetchUserMock).not.toHaveBeenCalled()
+    })
+
+    it('does not stack timers when the layout is remounted', () => {
+      mountDashboardLayout().unmount()
+      mountDashboardLayout()
+
+      vi.advanceTimersByTime(USER_REFRESH_INTERVAL)
+
+      expect(fetchUserMock).toHaveBeenCalledTimes(1)
     })
   })
 })

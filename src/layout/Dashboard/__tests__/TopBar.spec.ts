@@ -134,6 +134,19 @@ describe('TopBar', () => {
 
       expect(wrapper.findComponent({ name: 'UserIcon' }).exists()).toBe(true)
     })
+    it('renders the profile picture when available', () => {
+      vi.spyOn(Date, 'now').mockReturnValue(1234567890)
+
+      authStore.loggedInUser!.profile_pic = 'https://example.com/profile.jpg'
+
+      const wrapper = mountTopBar()
+      const image = wrapper.get('img')
+
+      expect(image.attributes('src')).toBe('https://example.com/profile.jpg?v=1234567890')
+      expect(image.attributes('alt')).toBe('Profile Picture')
+
+      vi.restoreAllMocks()
+    })
   })
 
   describe('side navigation', () => {

@@ -9,7 +9,8 @@
     <div class="lg:hidden center-flex-col gap-2">
       <img
         v-if="authStore.loggedInUser?.profile_pic"
-        :src="authStore.loggedInUser.profile_pic"
+        :src="withCacheBust(authStore.loggedInUser.profile_pic)"
+        :key="authStore.loggedInUser.profile_pic"
         alt="Profile Picture"
         class="w-20 h-20 object-cover rounded-full"
       />
@@ -77,9 +78,11 @@ import { useRoute, useRouter } from 'vue-router'
 import HomeIcon from '@/components/Icons/HomeIcon.vue'
 import UserIcon from '@/components/Icons/UserIcon.vue'
 import DarkModeIcon from '@/components/Icons/DarkModeIcon.vue'
+import BackPackIcon from '@/components/Icons/BackPackIcon.vue'
 import LightModeIcon from '@/components/Icons/LightModeIcon.vue'
 import UserGroupIcon from '@/components/Icons/UserGroupIcon.vue'
 import { useAuthStore, useUiStore } from '@/stores'
+import { withCacheBust } from '@/utils/urlSecurity'
 
 defineOptions({
   name: 'DashboardSideNav',
@@ -102,6 +105,11 @@ const menuItems: MenuItem[] = [
     name: 'dashboard',
     label: 'Home',
     icon: markRaw(HomeIcon),
+  },
+  {
+    name: 'smartpacks-parent',
+    label: 'SmartPack Management',
+    icon: markRaw(BackPackIcon),
   },
   {
     name: 'my-profile',

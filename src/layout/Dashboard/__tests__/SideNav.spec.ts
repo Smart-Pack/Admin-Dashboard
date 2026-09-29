@@ -126,13 +126,17 @@ describe('SideNav', () => {
     })
 
     it('renders the profile picture when available', () => {
+      vi.spyOn(Date, 'now').mockReturnValue(1234567890)
+
       authStore.loggedInUser!.profile_pic = 'https://example.com/profile.jpg'
 
       const wrapper = mountSideNav()
       const image = wrapper.get('img')
 
-      expect(image.attributes('src')).toBe('https://example.com/profile.jpg')
+      expect(image.attributes('src')).toBe('https://example.com/profile.jpg?v=1234567890')
       expect(image.attributes('alt')).toBe('Profile Picture')
+
+      vi.restoreAllMocks()
     })
 
     it('renders the light mode icon when light mode is active', () => {

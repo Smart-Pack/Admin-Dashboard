@@ -25,7 +25,11 @@
             {{ headingTitle }}
           </h2>
           <h3 class="sub-heading lg:text-lg">{{ user.first_name }} {{ user.last_name }}</h3>
-          <div class="flex secondary-text justify-start w-full" :title="user?.account_type">
+          <div
+            v-if="showAccountType"
+            class="flex secondary-text justify-start w-full"
+            :title="user?.account_type"
+          >
             <BriefcaseIcon class="secondary-text text-left" />
             <span>{{ $filters.capitalize(user.account_type) }}</span>
           </div>
@@ -120,6 +124,12 @@
       </header>
       <UserUpdateForm :initial-values="{ ...user }" @close="handlePageChange" />
     </div>
+    <UserAssets
+      v-if="isCustomer && user.id"
+      class="mt-8"
+      :user-id="user.id"
+      :user-name="user?.full_name"
+    />
   </div>
 </template>
 
@@ -136,6 +146,7 @@ import MaleIcon from '@/components/Icons/MaleIcon.vue'
 import FemaleIcon from '@/components/Icons/FemaleIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import UserUpdateForm from '@/components/Users/UpdateForm.vue'
+import UserAssets from '@/components/Users/Assets.vue'
 import { useAuthStore } from '@/stores/modules/auth'
 
 export default defineComponent({
@@ -145,6 +156,7 @@ export default defineComponent({
     MaleIcon,
     FemaleIcon,
     PhoneIcon,
+    UserAssets,
     UserUpdateForm,
   },
   computed: {
@@ -152,7 +164,17 @@ export default defineComponent({
       return useAuthStore(this.$pinia)
     },
     headingTitle(): string {
-      return `${this.$filters.capitalize(this.user.account_type || '')} ${this.$filters.capitalize(this.user.role || 'User')}`.trim()
+      if (this.user.account_type === 'customer') {
+        return 'Customer'
+      }
+
+      return this.$filters.capitalize(this.user.role || 'User')
+    },
+    showAccountType() {
+      return !!this.user && (this.user.account_type || '').toLowerCase() !== 'customer'
+    },
+    isCustomer() {
+      return !!this.user && (this.user.account_type || '').toLowerCase() === 'customer'
     },
     userId(): { id: string } {
       const id = this.$route.params.id

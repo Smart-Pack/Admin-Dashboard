@@ -140,7 +140,11 @@ describe('Users API', () => {
 
       await editMe(payload)
 
-      expect(apiClient.patch).toHaveBeenCalledWith(USERS.ME, expect.any(FormData))
+      expect(apiClient.patch).toHaveBeenCalledWith(USERS.ME, expect.any(FormData), {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
     })
   })
 

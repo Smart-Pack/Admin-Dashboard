@@ -9,7 +9,6 @@ This document describes the technologies and tools used to develop and operate t
 | Technology | Purpose                                    |
 | ---------- | ------------------------------------------ |
 | Axios      | HTTP client for API communication          |
-| Browser Image Compression | — Client-side image compression and resizing before upload |
 | jwt-decode | — Decodes JSON Web Tokens (JWTs) to access their payload claims |
 | Vue        | Frontend framework                         |
 | TypeScript | Type-safe programming language             |
@@ -22,6 +21,8 @@ This document describes the technologies and tools used to develop and operate t
 | VeeValidate | — Form validation and field state management |
 | @vee-validate/rules | — Built-in validation rules for VeeValidate |
 | Vue Tel Input | — International telephone number input with country selection and formatting |
+| QRCode Vue 3 | `qrcode-vue3` | Vue 3 QR code generation component for displaying device/user QR codes |
+
 
 ## Testing
 

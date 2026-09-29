@@ -42,25 +42,31 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch } from 'vue'
+import { onMounted, onUnmounted, watch } from 'vue'
 
 import ContentFooter from './ContentFooter.vue'
 import ContentHeader from './ContentHeader.vue'
 import TopBar from './TopBar.vue'
 import SideNav from './SideNav.vue'
-import { useUiStore } from '@/stores'
+import { useAuthStore, useUiStore } from '@/stores'
 
 /**
  * Main dashboard layout for authenticated users.
  *
  * Coordinates the dashboard navigation, side navigation, content header,
- * routed page content, footer, notification backdrop, and chatbot.
+ * routed page content, footer, notification backdrop, chatbot, and
+ * periodic authenticated-user data refreshes.
  */
 defineOptions({
   name: 'DashboardLayout',
 })
 
 const uiStore = useUiStore()
+const authStore = useAuthStore()
+
+const USER_REFRESH_INTERVAL = 10 * 60 * 1000
+
+let userRefreshTimer: ReturnType<typeof setInterval> | undefined
 
 /**
  * Synchronizes the document theme with the active UI theme.
@@ -72,16 +78,56 @@ function syncTheme(isLightMode: boolean): void {
 }
 
 /**
+ * Refreshes the currently authenticated user's data.
+ *
+ * Errors are intentionally suppressed because this background refresh
+ * should not interrupt the user's dashboard experience.
+ */
+async function refreshUser(): Promise<void> {
+  try {
+    await authStore.fetchUser()
+  } catch {
+    // Suppress background refresh errors.
+  }
+}
+
+/**
+ * Starts the periodic authenticated-user refresh timer.
+ */
+function startUserRefreshTimer(): void {
+  userRefreshTimer = setInterval(refreshUser, USER_REFRESH_INTERVAL)
+}
+
+/**
+ * Stops the periodic authenticated-user refresh timer.
+ */
+function stopUserRefreshTimer(): void {
+  if (userRefreshTimer) {
+    clearInterval(userRefreshTimer)
+    userRefreshTimer = undefined
+  }
+}
+
+/**
  * Initializes the dashboard UI state after the layout is mounted.
  *
- * Resets the notification backdrop and side navigation state, then
- * synchronizes the document theme with the current UI store state.
+ * Resets the notification backdrop and side navigation state, synchronizes
+ * the document theme with the current UI store state, and starts the
+ * authenticated-user refresh timer.
  */
 onMounted(() => {
   uiStore.updateSwalBackdrop(false)
   uiStore.updateIsSideNavOpen(false)
 
   syncTheme(uiStore.isLightMode)
+  startUserRefreshTimer()
+})
+
+/**
+ * Cleans up the authenticated-user refresh timer when the layout is removed.
+ */
+onUnmounted(() => {
+  stopUserRefreshTimer()
 })
 
 /**
