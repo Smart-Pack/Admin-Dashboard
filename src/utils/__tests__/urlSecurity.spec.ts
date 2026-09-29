@@ -96,8 +96,8 @@ describe('withCacheBust', () => {
     )
   })
 
-  it('returns null for a null URL', () => {
-    expect(withCacheBust(null)).toBeNull()
+  it('returns undefined for an undefined URL', () => {
+    expect(withCacheBust('')).toBeUndefined()
   })
   it('returns a blob URL unchanged', () => {
     const url = 'blob:http://localhost:5173/8c5d1234-5678-90ab-cdef-123456789abc'
