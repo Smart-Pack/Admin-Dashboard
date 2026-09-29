@@ -151,7 +151,8 @@ export const editMe = async (payload: EditMePayload): Promise<User> => {
     formData.append('profile_pic', payload.profile_pic)
   }
 
-  const response = await apiClient.patch<User>(USERS.ME, formData)
+  const headers = { 'Content-Type': 'multipart/form-data' }
+  const response = await apiClient.patch<User>(USERS.ME, formData, { headers })
 
   return response.data
 }

@@ -55,34 +55,43 @@ describe('UsersTable', () => {
       const tabs = layout.props('tabs') as Array<{ id: string; label: string }>
 
       expect(tabs).toHaveLength(4)
-      expect(tabs.map((tab) => tab.id)).toEqual(['all', 'admins', 'staff', 'inactive'])
-      expect(tabs.map((tab) => tab.label)).toEqual(['All', 'Admins', 'Staff', 'Suspended'])
+      expect(tabs.map((tab) => tab.id)).toEqual(['all', 'customers', 'internal', 'inactive'])
+      expect(tabs.map((tab) => tab.label)).toEqual(['All', 'Customers', 'Internal', 'Suspended'])
     })
 
-    it('scopes the admins tab to internal admin accounts', () => {
+    it('scopes the customers tab to customer accounts', () => {
       const wrapper = mountTable()
       const layout = wrapper.findComponent(TablePageLayout)
-      const tabs = layout.props('tabs') as Array<{ id: string; params: Record<string, unknown> }>
+      const tabs = layout.props('tabs') as Array<{
+        id: string
+        params: Record<string, unknown>
+      }>
 
-      const admins = tabs.find((tab) => tab.id === 'admins')
+      const customers = tabs.find((tab) => tab.id === 'customers')
 
-      expect(admins?.params).toEqual({ role: 'admin', account_type: 'internal' })
+      expect(customers?.params).toEqual({ account_type: 'customer' })
     })
 
-    it('scopes the staff tab to internal staff accounts', () => {
+    it('scopes the internal tab to internal accounts', () => {
       const wrapper = mountTable()
       const layout = wrapper.findComponent(TablePageLayout)
-      const tabs = layout.props('tabs') as Array<{ id: string; params: Record<string, unknown> }>
+      const tabs = layout.props('tabs') as Array<{
+        id: string
+        params: Record<string, unknown>
+      }>
 
-      const staff = tabs.find((tab) => tab.id === 'staff')
+      const internal = tabs.find((tab) => tab.id === 'internal')
 
-      expect(staff?.params).toEqual({ role: 'staff', account_type: 'internal' })
+      expect(internal?.params).toEqual({ account_type: 'internal' })
     })
 
     it('scopes the inactive tab to suspended users', () => {
       const wrapper = mountTable()
       const layout = wrapper.findComponent(TablePageLayout)
-      const tabs = layout.props('tabs') as Array<{ id: string; params: Record<string, unknown> }>
+      const tabs = layout.props('tabs') as Array<{
+        id: string
+        params: Record<string, unknown>
+      }>
 
       const inactive = tabs.find((tab) => tab.id === 'inactive')
 
@@ -92,7 +101,10 @@ describe('UsersTable', () => {
     it('leaves the all tab unscoped', () => {
       const wrapper = mountTable()
       const layout = wrapper.findComponent(TablePageLayout)
-      const tabs = layout.props('tabs') as Array<{ id: string; params: Record<string, unknown> }>
+      const tabs = layout.props('tabs') as Array<{
+        id: string
+        params: Record<string, unknown>
+      }>
 
       const all = tabs.find((tab) => tab.id === 'all')
 
