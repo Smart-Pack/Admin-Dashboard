@@ -10,7 +10,7 @@
           <div
             class="flex h-32 w-32 lg:w-36 lg:h-36 items-center justify-center rounded-full border-2 card-base"
           >
-            <ShoppingBagIcon class="h-20 w-20 lg:h-24 lg:w-24 primary-text" />
+            <BackPackIcon class="h-20 w-20 lg:h-24 lg:w-24 primary-text" />
           </div>
 
           <h2 class="main-heading text-xl lg:text-2xl">SmartPack</h2>
@@ -145,7 +145,7 @@ import type { SmartPack } from '@/api/modules/smartpacks'
 import type { User } from '@/api/modules/users'
 import type { ItemNotFoundError } from '@/api/types'
 
-import ShoppingBagIcon from '@/components/Icons/ShoppingBagIcon.vue'
+import BackPackIcon from '@/components/Icons/BackPackIcon.vue'
 import UserIcon from '@/components/Icons/UserIcon.vue'
 import AssignUser from '@/components/Smartpacks/AssignUser.vue'
 import SmartPackQrComponent from '@/components/Smartpacks/QrCode.vue'
@@ -156,7 +156,7 @@ export default defineComponent({
   name: 'SmartPackDetails',
 
   components: {
-    ShoppingBagIcon,
+    BackPackIcon,
     UserIcon,
     AssignUser,
     SmartPackQrComponent,

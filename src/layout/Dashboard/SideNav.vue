@@ -78,7 +78,7 @@ import { useRoute, useRouter } from 'vue-router'
 import HomeIcon from '@/components/Icons/HomeIcon.vue'
 import UserIcon from '@/components/Icons/UserIcon.vue'
 import DarkModeIcon from '@/components/Icons/DarkModeIcon.vue'
-import ShoppingBagIcon from '@/components/Icons/ShoppingBagIcon.vue'
+import BackPackIcon from '@/components/Icons/BackPackIcon.vue'
 import LightModeIcon from '@/components/Icons/LightModeIcon.vue'
 import UserGroupIcon from '@/components/Icons/UserGroupIcon.vue'
 import { useAuthStore, useUiStore } from '@/stores'
@@ -109,7 +109,7 @@ const menuItems: MenuItem[] = [
   {
     name: 'smartpacks-parent',
     label: 'SmartPack Management',
-    icon: markRaw(ShoppingBagIcon),
+    icon: markRaw(BackPackIcon),
   },
   {
     name: 'my-profile',
