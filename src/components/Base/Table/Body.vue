@@ -59,7 +59,10 @@
             v-else-if="field.action && !Array.isArray(field.action) && 'route' in field.action"
             :to="{
               name: field.action.route,
-              params: { id: item.id },
+              params:
+                typeof field.action.params === 'function'
+                  ? field.action.params(item)
+                  : (field.action.params ?? { id: item.id }),
             }"
             class="form-submit py-1 px-2 hover:text-white text-sm"
           >
