@@ -28,6 +28,7 @@ export type SmartPackListItem = SmartPack
 
 export interface SmartPackQueryParams extends PaginationQueryParams {
   assigned_to?: number
+  group?: number
   is_assigned?: boolean
 }
 
