@@ -49,7 +49,8 @@ const globalStubs = {
     stubs: {
       DropdownIcon: true,
       'router-link': {
-        template: '<a><slot /></a>',
+        props: ['to'],
+        template: '<a :data-to="JSON.stringify(to)"><slot /></a>',
       },
     },
     mocks: {
@@ -585,6 +586,72 @@ describe('Body', () => {
       await dropdown.trigger('click')
 
       expect(wrapper.text()).toContain('Edit')
+    })
+    it('uses the row id as the route param by default', () => {
+      const wrapper = mountBody({
+        headings: [
+          {
+            key: 'actions',
+            label: 'Actions',
+            action: { name: 'View', route: 'user-details' },
+          },
+        ],
+      })
+
+      expect(JSON.parse(wrapper.find('a').attributes('data-to')!)).toEqual({
+        name: 'user-details',
+        params: { id: 1 },
+      })
+    })
+
+    it('uses static route params when provided', () => {
+      const wrapper = mountBody({
+        headings: [
+          {
+            key: 'actions',
+            label: 'Actions',
+            action: {
+              name: 'View',
+              route: 'user-details',
+              params: { id: 99, tab: 'activity' },
+            },
+          },
+        ],
+      })
+
+      expect(JSON.parse(wrapper.find('a').attributes('data-to')!)).toEqual({
+        name: 'user-details',
+        params: { id: 99, tab: 'activity' },
+      })
+    })
+
+    it('resolves route params from a function using the row item', () => {
+      const params = vi.fn<(item: (typeof items)[number]) => Record<string, unknown>>((item) => ({
+        userId: item.id,
+        role: item.profile.role,
+      }))
+
+      const wrapper = mountBody({
+        headings: [
+          {
+            key: 'actions',
+            label: 'Actions',
+            action: { name: 'View', route: 'user-details', params },
+          },
+        ],
+      })
+
+      const links = wrapper.findAll('a')
+
+      expect(params).toHaveBeenCalledWith(items[0])
+      expect(JSON.parse(links[0]!.attributes('data-to')!)).toEqual({
+        name: 'user-details',
+        params: { userId: 1, role: 'Admin' },
+      })
+      expect(JSON.parse(links[1]!.attributes('data-to')!)).toEqual({
+        name: 'user-details',
+        params: { userId: 2, role: 'User' },
+      })
     })
   })
 
