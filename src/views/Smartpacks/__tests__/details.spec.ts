@@ -39,6 +39,7 @@ const mockSmartPack: SmartPack = {
   last_seen: '2026-09-23T14:30:00Z',
   is_online: true,
   assigned_to: null,
+  group: null,
   child_name: 'Amara',
   created: '2026-01-05T09:00:00.000Z',
   updated: '2026-09-23T14:30:00Z',

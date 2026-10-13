@@ -10,6 +10,11 @@ export interface SmartPackAssignedUser {
   phone: string
 }
 
+export interface SmartPackGroup {
+  id: number
+  name: string
+}
+
 export interface SmartPack {
   id: number
   device_uid: string
@@ -19,6 +24,7 @@ export interface SmartPack {
   last_seen: string
   is_online: boolean
   assigned_to: SmartPackAssignedUser | null
+  group: SmartPackGroup | null
   child_name: string
   created: string
   updated: string
