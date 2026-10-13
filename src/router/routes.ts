@@ -125,6 +125,12 @@ const routes: RouteRecordRaw[] = [
             component: () => import('@/views/Users/details.vue'),
             meta: { title: 'User Details', breadcrumb: 'User Details' },
           },
+          {
+            path: 'groups/:id/details',
+            name: 'group-details',
+            component: () => import('@/views/Groups/details.vue'),
+            meta: { title: 'Group Details', breadcrumb: 'Group Details' },
+          },
         ],
       },
       // SmartPacks section

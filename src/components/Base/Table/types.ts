@@ -1,3 +1,5 @@
+import type { RouteParamsRawGeneric } from 'vue-router'
+
 export interface TableItem {
   id: string | number
   _id?: string | number
@@ -25,7 +27,12 @@ interface BaseAction {
 
 export interface RouteAction extends BaseAction {
   route: string
+  params?: RouteParamsRawGeneric | RouteParamsResolver
 }
+
+type RouteParamsResolver = {
+  bivarianceHack(item: TableItem): RouteParamsRawGeneric
+}['bivarianceHack']
 
 export interface PopupAction extends BaseAction {
   type: 'popup'

@@ -38,6 +38,7 @@ const mockSmartPack: SmartPack = {
     phone: mockUser.phone,
   },
   child_name: 'Amara',
+  group: null,
   created: '2026-01-05T09:00:00.000Z',
   updated: '2026-09-18T12:33:13.497Z',
 }
